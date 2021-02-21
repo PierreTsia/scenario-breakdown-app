@@ -2,7 +2,8 @@
   <v-container fluid dark>
     <v-row class="mb-6" justify="center" no-gutters>
       <v-col sm="12" md="6" lg="5" xl="4">
-        <LoginForm class="mx-auto" />
+        <LoginCard class="mx-auto" @on-login-confirm-click="auth.login" />
+        <SignupCard class="mx-auto" @on-signup-confirm-click="auth.signup" />
       </v-col>
     </v-row>
   </v-container>
@@ -10,10 +11,15 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import LoginForm from "@/components/LoginCard.vue";
+import { authModule } from "@/store/modules/auth";
+
+import LoginCard from "@/components/LoginCard.vue";
+import SignupCard from "@/components/SignupCard.vue";
 
 @Component({
-  components: { LoginForm }
+  components: { LoginCard, SignupCard }
 })
-export default class LoginHome extends Vue {}
+export default class LoginHome extends Vue {
+  auth = authModule;
+}
 </script>

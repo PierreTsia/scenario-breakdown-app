@@ -1,9 +1,18 @@
 <template>
-  <v-card color="grey darken-3" dark outlined class="loginCard">
-    <v-card-title>Login</v-card-title>
+  <v-card color="grey darken-3" dark outlined class="signUpCard">
+    <v-card-title>Signup</v-card-title>
     <v-spacer />
     <v-card-text>
       <v-form>
+        <v-text-field
+          ref="username"
+          v-model="username"
+          :rules="[() => !!username || 'This field is required']"
+          prepend-icon="mdi-account"
+          label="username"
+          placeholder="johndoe@mail.com"
+          required
+        />
         <v-text-field
           ref="email"
           v-model="email"
@@ -24,7 +33,7 @@
           placeholder="*********"
           counter
           required
-          @keydown.enter="onLoginConfirmClick"
+          @keydown.enter="onSignupConfirmClick"
           @click:append="showPassword = !showPassword"
         />
       </v-form>
@@ -37,8 +46,8 @@
         align-center
         justify-center
         large
-        @click="onLoginConfirmClick"
-        >Se Connecter
+        @click="onSignupConfirmClick"
+        >Créer mon compte
       </v-btn>
       <v-spacer />
     </v-card-actions>
@@ -57,7 +66,8 @@ import { Component, Emit, Vue } from "vue-property-decorator";
 @Component({
   components: {}
 })
-export default class LoginForm extends Vue {
+export default class SignupCard extends Vue {
+  username = "";
   email = "";
   password = "";
   errorMessages = "Incorrect login info";
@@ -66,13 +76,17 @@ export default class LoginForm extends Vue {
   showPassword = false;
 
   @Emit()
-  onLoginConfirmClick() {
-    return { email: this.email, password: this.password };
+  onSignupConfirmClick() {
+    return {
+      username: this.username,
+      email: this.email,
+      password: this.password
+    };
   }
 }
 </script>
 <style lang="stylus">
 .v-application .grey
-  .loginCard
+  .signUpCard
     border-color #E0E0E0 !important
 </style>

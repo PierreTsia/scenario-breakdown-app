@@ -20,9 +20,9 @@
         <v-list-item link>
           <v-list-item-content>
             <v-list-item-title class="title">
-              Sandra Adams
+              {{ me.username }}
             </v-list-item-title>
-            <v-list-item-subtitle>sandra_a88@gmail.com</v-list-item-subtitle>
+            <v-list-item-subtitle>{{ me.email }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -56,11 +56,14 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, Watch, Emit } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import { User } from "@/dtos/User.dto";
 
+const authModule = namespace("auth");
 @Component({})
 export default class Drawer extends Vue {
   @Prop({ required: true, default: false, type: Boolean }) isOpened!: boolean;
-
+  @authModule.State("currentUser") me!: User;
   drawer = false;
 
   @Watch("isOpened", { immediate: true })

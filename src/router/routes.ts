@@ -1,4 +1,5 @@
 import { RouteConfig } from "vue-router";
+import AuthGuard from "./authGuard";
 
 const routes: Array<RouteConfig> = [
   {
@@ -6,30 +7,21 @@ const routes: Array<RouteConfig> = [
     meta: {
       name: "",
       requiresAuth: true,
-      layout: "dashboard"
+      layout: "default"
     },
     redirect: {
-      path: "/dashboard"
+      path: "/"
     }
   },
-  // This  allows you to have pages apart of the app but no rendered inside the dash
   {
     path: "/",
     meta: {
-      name: "",
+      name: "Home",
       requiresAuth: false,
       layout: "default"
     },
-    component: () =>
-      import(/* webpackChunkName: "routes" */ `@/views/LoginHome.vue`)
-    // redirect if already signed in
-    /*beforeEnter: (to, from, next) => {
-      if (store.getters.authorized) {
-        next("/dashboard");
-      } else {
-        next();
-      }
-    },*/
+    component: () => import(`@/views/LoginHome.vue`),
+    beforeEnter: AuthGuard
     /*children: [
       {
         path: "",
@@ -37,15 +29,15 @@ const routes: Array<RouteConfig> = [
       }
     ]*/
   },
-  // add any extra routes that you want rendered in the dashboard as a child below. Change toolbar names here
   {
     path: "/dashboard",
     meta: {
-      name: "Dashboard View",
+      name: "Dashboard",
       requiresAuth: true,
       layout: "dashboard"
     },
-    component: () => import(`@/views/DashboardView.vue`)
+    component: () => import(`@/views/DashboardView.vue`),
+    beforeEnter: AuthGuard,
     /* children: [
       {
         path: "",
