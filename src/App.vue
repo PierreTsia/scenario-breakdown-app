@@ -1,19 +1,20 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+  <component :is="`${layout}-layout`">
     <router-view />
-  </div>
+  </component>
 </template>
 
-<style lang="stylus">
-#app
-  font-family Avenir, Helvetica, Arial, sans-serif
-  -webkit-font-smoothing antialiased
-  -moz-osx-font-smoothing grayscale
-  text-align center
-  color #2c3e50
-  margin-top 60px
-</style>
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+import DefaultLayout from "@/layouts/default-layout.vue";
+import DashboardLayout from "@/layouts/dashboard-layout.vue";
+
+@Component({
+  components: { DefaultLayout, DashboardLayout }
+})
+export default class App extends Vue {
+  get layout() {
+    return this.$route?.meta?.layout ?? "default";
+  }
+}
+</script>
