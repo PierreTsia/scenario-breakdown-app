@@ -1,25 +1,25 @@
 const light = {
-  primary: "#4caf50",
-  secondary: "#4caf50",
-  tertiary: "#495057",
-  accent: "#82B1FF",
-  error: "#f55a4e",
-  info: "#00d3ee",
-  success: "#5cb860",
-  warning: "#ffa21a",
-  general: "#2196F3"
+  primary: "#262038",
+  accent: "#3700B3",
+  secondary: "#B25633",
+  success: "#4CAF50",
+  info: "#2196F3",
+  warning: "#EED936",
+  error: "#FF5252",
+  background: "#dadce0",
+  elevation: "#F5F6F8"
 };
 
 const dark = {
-  primary: "#BB86FC",
-  secondary: "#03DAC5",
-  tertiary: "#495057",
-  accent: "#3700B3",
-  error: "#f55a4e",
-  info: "#00d3ee",
-  success: "#5cb860",
-  warning: "#ffa21a",
-  general: "#2196F3"
+  primary: "#0097A7",
+  accent: "#42A5F5",
+  secondary: "#B25633",
+  success: "#4CAF50",
+  info: "#2196F3",
+  warning: "#EED936",
+  error: "#FF5252",
+  background: "#212121",
+  elevation: "#424242"
 };
 
 export { light, dark };

@@ -1,15 +1,10 @@
 <template>
-  <v-app dark>
+  <v-app dark :style="{ background: $vuetify.theme.themes[theme].background }">
     <Drawer :is-opened="drawerIsShown" @on-drawer-input-change="toggleDrawer" />
     <Toolbar @on-drawer-icon-click="drawerIsShown = !drawerIsShown" />
     <v-main>
       <v-fade-transition mode="in-out">
-        <v-container
-          fill-height
-          fluid
-          id="dashboard-layout"
-          class="grey darken-4"
-        >
+        <v-container fluid id="dashboard-layout">
           <slot />
         </v-container>
       </v-fade-transition>
@@ -24,12 +19,12 @@ import { Component, Vue } from "vue-property-decorator";
 export default class DashboardLayout extends Vue {
   drawerIsShown = false;
 
+  get theme() {
+    return this.$vuetify.theme.dark ? "dark" : "light";
+  }
+
   toggleDrawer(value: boolean) {
     this.drawerIsShown = value;
   }
 }
 </script>
-<style lang="stylus">
-#dashboard-layout
-  height 100vh
-</style>

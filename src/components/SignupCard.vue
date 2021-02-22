@@ -1,6 +1,6 @@
 <template>
-  <v-card color="grey darken-3" dark outlined class="signUpCard">
-    <v-card-title>Signup</v-card-title>
+  <v-card outlined class="signUpCard">
+    <v-card-title>{{ $t("auth.signup") }}</v-card-title>
     <v-spacer />
     <v-card-text>
       <v-form>
@@ -9,8 +9,8 @@
           v-model="username"
           :rules="[() => !!username || 'This field is required']"
           prepend-icon="mdi-account"
-          label="username"
-          placeholder="johndoe@mail.com"
+          :label="$t('global.username')"
+          placeholder="John Doe"
           required
         />
         <v-text-field
@@ -18,18 +18,37 @@
           v-model="email"
           :rules="[() => !!email || 'This field is required']"
           prepend-icon="mdi-at"
-          label="email"
+          label="Email"
           placeholder="johndoe@mail.com"
           required
         />
         <v-text-field
           ref="password"
           v-model="password"
-          :rules="[() => !!password || 'This field is required']"
+          :rules="[() => !!password || $t('validation.required')]"
           :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
           :type="showPassword ? 'text' : 'password'"
           prepend-icon="mdi-lock"
-          label="Password"
+          :label="$t('auth.password')"
+          placeholder="*********"
+          counter
+          required
+          @keydown.enter="onSignupConfirmClick"
+          @click:append="showPassword = !showPassword"
+        />
+
+        <v-text-field
+          ref="password2"
+          v-model="passwordConfirm"
+          :rules="[
+            () =>
+              (!!passwordConfirm && passwordConfirm === password) ||
+              $t('validation.passwordMatch')
+          ]"
+          :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+          :type="showPassword ? 'text' : 'password'"
+          prepend-icon="mdi-lock"
+          :label="$t('auth.confirmPassword')"
           placeholder="*********"
           counter
           required
@@ -42,7 +61,7 @@
     <v-card-actions class="py-3">
       <v-spacer />
       <v-btn
-        color="orange darken-3"
+        color="primary"
         align-center
         justify-center
         large
@@ -70,6 +89,7 @@ export default class SignupCard extends Vue {
   username = "";
   email = "";
   password = "";
+  passwordConfirm = "";
   errorMessages = "Incorrect login info";
   snackbar = false;
   color = "general";
@@ -85,8 +105,3 @@ export default class SignupCard extends Vue {
   }
 }
 </script>
-<style lang="stylus">
-.v-application .grey
-  .signUpCard
-    border-color #E0E0E0 !important
-</style>

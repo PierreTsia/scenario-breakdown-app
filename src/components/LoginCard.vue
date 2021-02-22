@@ -1,26 +1,26 @@
 <template>
-  <v-card color="grey darken-3" dark outlined class="loginCard">
-    <v-card-title>Login</v-card-title>
+  <v-card outlined class="loginCard">
+    <v-card-title>{{ $t("auth.login") }}</v-card-title>
     <v-spacer />
     <v-card-text>
       <v-form>
         <v-text-field
           ref="email"
           v-model="email"
-          :rules="[() => !!email || 'This field is required']"
+          :rules="[() => !!email || this.$t('validation.required')]"
           prepend-icon="mdi-at"
-          label="email"
+          label="Email"
           placeholder="johndoe@mail.com"
           required
         />
         <v-text-field
           ref="password"
           v-model="password"
-          :rules="[() => !!password || 'This field is required']"
+          :rules="[() => !!password || this.$t('validation.required')]"
           :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
           :type="showPassword ? 'text' : 'password'"
           prepend-icon="mdi-lock"
-          label="Password"
+          :label="$t('auth.password')"
           placeholder="*********"
           counter
           required
@@ -33,19 +33,19 @@
     <v-card-actions class="py-3">
       <v-spacer />
       <v-btn
-        color="orange darken-3"
+        color="primary"
         align-center
         justify-center
         large
         @click="onLoginConfirmClick"
-        >Se Connecter
+        >{{ $t("auth.login") }}
       </v-btn>
       <v-spacer />
     </v-card-actions>
     <v-snackbar v-model="snackbar" :color="color" :top="true">
       {{ errorMessages }}
       <v-btn dark text @click="snackbar = false">
-        Close
+        {{ $t("global.close") }}
       </v-btn>
     </v-snackbar>
   </v-card>
@@ -71,8 +71,3 @@ export default class LoginForm extends Vue {
   }
 }
 </script>
-<style lang="stylus">
-.v-application .grey
-  .loginCard
-    border-color #E0E0E0 !important
-</style>

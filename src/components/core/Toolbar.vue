@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar id="core-toolbar" dark color="grey darken-3">
+  <v-app-bar id="core-toolbar" absolute color="primary" dark>
     <div class="v-toolbar-title">
       <v-toolbar-title class="font-weight-light text-general">
         <v-btn
@@ -14,12 +14,10 @@
 
     <v-spacer />
     <v-toolbar-items class="py-4">
-      <router-link v-ripple class="toolbar-items" to="/">
-        <v-badge color="error" overlap>
-          <template slot="badge">{{ notifications.length }}</template>
-          <v-icon>mdi-bell</v-icon>
-        </v-badge>
-      </router-link>
+      <v-badge color="error" overlap>
+        <template slot="badge">{{ notifications.length }}</template>
+        <v-icon>mdi-bell</v-icon>
+      </v-badge>
     </v-toolbar-items>
   </v-app-bar>
 </template>

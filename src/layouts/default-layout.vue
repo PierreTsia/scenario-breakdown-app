@@ -1,13 +1,8 @@
 <template>
-  <v-app dark>
+  <v-app dark :style="{ background: $vuetify.theme.themes[theme].background }">
     <v-main>
       <v-fade-transition mode="in-out">
-        <v-container
-          fill-height
-          fluid
-          id="default-layout"
-          class="grey darken-4"
-        >
+        <v-container fill-height fluid id="default-layout">
           <slot />
         </v-container>
       </v-fade-transition>
@@ -17,10 +12,9 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 @Component({})
-export default class DefaultLayout extends Vue {}
+export default class DefaultLayout extends Vue {
+  get theme() {
+    return this.$vuetify.theme.dark ? "dark" : "light";
+  }
+}
 </script>
-<style lang="stylus">
-#default-layout
-  height 100vh
-  outline 1px solid red
-</style>

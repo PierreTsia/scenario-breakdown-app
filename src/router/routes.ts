@@ -22,15 +22,10 @@ const routes: Array<RouteConfig> = [
     },
     component: () => import(`@/views/LoginHome.vue`),
     beforeEnter: AuthGuard
-    /*children: [
-      {
-        path: "",
-        component: () => import(`@/components/LoginCard.vue`)
-      }
-    ]*/
   },
   {
     path: "/dashboard",
+    name: "dashboard",
     meta: {
       name: "Dashboard",
       requiresAuth: true,
@@ -38,6 +33,20 @@ const routes: Array<RouteConfig> = [
     },
     component: () => import(`@/views/DashboardView.vue`),
     beforeEnter: AuthGuard,
+    children: [
+      {
+        path: "/dashboard/projects",
+        name: "projects",
+        meta: { layout: "dashboard" },
+        component: () => import(`@/views/DashboardView.vue`)
+      },
+      {
+        path: "/dashboard/settings",
+        name: "settings",
+        meta: { layout: "dashboard" },
+        component: () => import(`@/views/DashboardView.vue`)
+      }
+    ]
     /* children: [
       {
         path: "",
