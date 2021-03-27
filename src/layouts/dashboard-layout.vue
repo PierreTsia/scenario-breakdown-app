@@ -1,7 +1,7 @@
 <template>
   <v-app dark :style="{ background: $vuetify.theme.themes[theme].background }">
     <Drawer :is-opened="drawerIsShown" @on-drawer-input-change="toggleDrawer" />
-    <Toolbar @on-drawer-icon-click="drawerIsShown = !drawerIsShown" />
+    <Toolbar @on-drawer-icon-click="toggleDrawer" />
     <v-main>
       <v-fade-transition mode="in-out">
         <v-container fluid id="dashboard-layout">

@@ -1,7 +1,12 @@
-export type User = {
-  id: string;
-  username: string;
-  avatar: string;
-  email: string;
-  handle: string;
-};
+import { Expose } from "class-transformer";
+
+export class User {
+  @Expose()
+  id?: string;
+  @Expose()
+  username?: string;
+  @Expose()
+  avatar?: string;
+  @Expose()
+  email?: string;
+}

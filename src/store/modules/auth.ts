@@ -17,7 +17,7 @@ export interface SignupPayload extends LoginPayload {
 export class AuthModule extends VuexModule {
   currentUser: User | null = null;
   isLoading = false;
-  error: any = null;
+  error: unknown = null;
 
   @Mutation
   setCurrentUser(user: User | null) {
@@ -30,7 +30,7 @@ export class AuthModule extends VuexModule {
   }
 
   @Mutation
-  setAuthError(error: any) {
+  setAuthError(error: unknown) {
     this.error = error;
   }
 

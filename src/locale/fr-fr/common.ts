@@ -5,8 +5,10 @@ export default {
     validate: "Valider",
     confirm: "Confirmer",
     edit: "Modifier",
-    suppress: "Supprimer",
-    username: "Nom d'utilisateur"
+    delete: "Supprimer",
+    username: "Nom d'utilisateur",
+    requiredFields: "*indique les champs requis",
+    details: "Voir en detail"
   },
   auth: {
     login: "Se connecter",
@@ -39,5 +41,11 @@ export default {
     themeDetails: "Configurez le thème pour modifier l'apparence",
     lightDetails: "Theme clair",
     darkDetails: "Theme sombre"
+  },
+  projects: {
+    chaptersCount: "Aucun chapitre | {0} chapitre | {0} chapitres",
+    create: "Créer un nouveau projet",
+    title: "Titre du projet",
+    Description: "Description du projet"
   }
 };

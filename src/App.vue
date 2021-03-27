@@ -20,7 +20,7 @@ export default class App extends Vue {
   @appModule.Mutation("setDarkMode") setDarkMode!: (val: boolean) => void;
 
   @Watch("isDark", { immediate: true })
-  onDarkModeChange(isDark: any) {
+  onDarkModeChange(isDark: boolean) {
     this.$vuetify.theme.dark = isDark;
   }
 

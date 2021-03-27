@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="me">
+  <v-card>
     <v-navigation-drawer
       v-model="drawer"
       temporary
@@ -13,7 +13,7 @@
           <v-list-item-avatar>
             <v-img src="https://i.pravatar.cc/150"></v-img>
           </v-list-item-avatar>
-          <v-list-item-content>
+          <v-list-item-content v-if="me">
             <v-list-item-title class="title">
               {{ me.username }}
             </v-list-item-title>
@@ -70,7 +70,6 @@ export default class Drawer extends Vue {
   selectedMenu = null;
   isSettingsOpened = false;
 
-
   @Watch("isOpened", { immediate: true })
   onPropsChanges(newState: boolean) {
     this.drawer = newState;
@@ -95,7 +94,5 @@ export default class Drawer extends Vue {
       }
     ];
   }
-
-
 }
 </script>

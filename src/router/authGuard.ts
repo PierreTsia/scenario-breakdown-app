@@ -22,5 +22,7 @@ export default async (
         await authModule.getCurrentUser();
         return authModule.currentUser ? next({ path: "/dashboard" }) : next();
       }
+    default:
+      return next();
   }
 };

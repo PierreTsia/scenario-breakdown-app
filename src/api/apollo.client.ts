@@ -1,8 +1,15 @@
 import ApolloClient from "apollo-boost";
 import { BASE_URL } from "@/constants";
 import { authModule } from "@/store/modules/auth";
+import { GraphQLError } from "graphql";
 
-const formatErrors = ({ graphQLErrors, networkError }: any) => {
+const formatErrors = ({
+  graphQLErrors,
+  networkError
+}: {
+  graphQLErrors?: readonly GraphQLError[];
+  networkError?: Error;
+}) => {
   if (networkError) {
     console.log("[NETWORK ERROR]", networkError);
   }
@@ -34,7 +41,7 @@ const apolloClient = new ApolloClient({
       }
     });
   },
-  onError: ({ graphQLErrors, networkError }: any) =>
+  onError: ({ graphQLErrors, networkError }) =>
     formatErrors({ graphQLErrors, networkError })
 });
 

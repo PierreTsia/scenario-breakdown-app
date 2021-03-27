@@ -38,6 +38,7 @@ export default class Toolbar extends Vue {
 
   @Emit()
   onDrawerIconClick() {
+    console.log("pouet");
     return true;
   }
 

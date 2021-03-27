@@ -5,8 +5,10 @@ export default {
     validate: "Validate",
     confirm: "Confirm",
     edit: "Edit",
-    suppress: "Delete",
-    username: "User name"
+    delete: "Delete",
+    username: "User name",
+    requiredFields: "*indicates required fields",
+    details: "See details"
   },
   auth: {
     login: "Login",
@@ -39,5 +41,11 @@ export default {
     themeDetails: "Edit app's theme to customize your experience",
     lightDetails: "Light theme",
     darkDetails: "Dark theme"
+  },
+  projects: {
+    chaptersCount: "No chapters yet | {count} chapter | {count} chapters",
+    create: "Create new project",
+    title: "Project's title",
+    description: "Project's description"
   }
 };

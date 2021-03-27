@@ -24,6 +24,15 @@ const routes: Array<RouteConfig> = [
     beforeEnter: AuthGuard
   },
   {
+    path: "/projects/:id",
+    meta: {
+      name: "Project",
+      requiresAuth: false,
+      layout: "dashboard"
+    },
+    component: () => import(`@/views/ProjectView.vue`)
+  },
+  {
     path: "/dashboard",
     name: "dashboard",
     meta: {
