@@ -1,2 +1,4 @@
 export const BASE_URL =
-  "http://localhost:3000"; /*"https://scenario-breakdown-api.herokuapp.com";*/
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : "https://scenario-breakdown-api.herokuapp.com";
