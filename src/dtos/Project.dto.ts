@@ -2,12 +2,10 @@ import { Expose, Transform, TransformFnParams, Type } from "class-transformer";
 import { Chapter } from "@/dtos/Chapter.dto";
 import { User } from "@/dtos/User.dto";
 import format from "date-fns/format";
+import { parseISO } from "date-fns";
 
-const transformDate = ({ obj }: TransformFnParams): string => {
-  return isNaN(+obj.creationDate)
-    ? format(obj.creationDate, "dd MMMM yyyy")
-    : format(new Date(+obj.creationDate), "dd MMMM yyyy");
-};
+const transformDate = ({ obj }: TransformFnParams): string =>
+  format(parseISO(obj.creationDate), "dd MMMM yyyy");
 
 export class Project {
   @Expose()

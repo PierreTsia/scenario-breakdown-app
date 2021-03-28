@@ -18,8 +18,7 @@
       <v-list-item-content>
         <template v-if="!project.chapters.length">
           <v-list-item-subtitle>
-            Ce projet ne comporte pas encore de chapitres. Publiez en un pour
-            commencer !
+            {{ $t("projects.noChapters") }}
             <span class="caption accent--text">(*.docx format only)</span>
           </v-list-item-subtitle>
           <v-list-item-subtitle
@@ -48,7 +47,7 @@
             </v-list-item-subtitle>
             <v-list-item-subtitle class="d-flex justify-center">
               <v-btn color="primary" @click="uploadDocument">
-                UPLOAD
+                {{ $t("global.upload") }}
                 <v-icon class="ml-2 pb-1" dark>mdi-cloud-upload-outline</v-icon>
               </v-btn>
             </v-list-item-subtitle>
@@ -57,7 +56,7 @@
 
         <template v-else>
           <v-list-item-title class="d-flex justify-space-between">
-            <span>Chapitres</span>
+            <span>{{ $tc("projects.chapters", 2) }} :</span>
             <v-menu offset-y min-width="200">
               <template v-slot:activator="{ attrs, on }">
                 <v-btn icon color="grey lighten-1" v-bind="attrs" v-on="on">
@@ -91,7 +90,9 @@
                 <v-icon class="red" dark>mdi-text-box-check</v-icon>
               </v-list-item-avatar>
               <v-list-item-content>
-                <v-list-item-title v-text="fileName"></v-list-item-title>
+                <v-list-item-title>
+                  <v-text-field v-model="fileName" />
+                </v-list-item-title>
 
                 <v-list-item-subtitle>Click to upload</v-list-item-subtitle>
               </v-list-item-content>

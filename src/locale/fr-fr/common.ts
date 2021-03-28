@@ -8,7 +8,8 @@ export default {
     delete: "Supprimer",
     username: "Nom d'utilisateur",
     requiredFields: "*indique les champs requis",
-    details: "Voir en detail"
+    details: "Voir en detail",
+    upload: "Upload"
   },
   auth: {
     login: "Se connecter",
@@ -46,7 +47,10 @@ export default {
     chaptersCount: "Aucun chapitre | {0} chapitre | {0} chapitres",
     create: "Créer un nouveau projet",
     title: "Titre du projet",
-    description: "Description du projet"
+    description: "Description du projet",
+    chapters: "| Chapitre | Chapitres",
+    noChapters:
+      "Ce projet ne comporte pas encore de chapitres. Publiez en un pour commencer !"
   },
   tabs: {
     overview: "Synthèse",
