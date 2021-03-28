@@ -91,13 +91,20 @@
               </v-list-item-avatar>
               <v-list-item-content>
                 <v-list-item-title>
-                  <v-text-field v-model="fileName" />
+                  <v-text-field v-model="fileName" v-if="!isLoading" />
+                  <v-progress-linear
+                    v-else
+                    indeterminate
+                    color="yellow darken-2"
+                  />
                 </v-list-item-title>
 
-                <v-list-item-subtitle>Click to upload</v-list-item-subtitle>
+                <v-list-item-subtitle>{{
+                  isLoading ? "Loading, please wait..." : "Click to upload"
+                }}</v-list-item-subtitle>
               </v-list-item-content>
 
-              <v-list-item-action>
+              <v-list-item-action v-if="!isLoading">
                 <v-btn icon @click="uploadDocument">
                   <v-icon color="grey lighten-1"
                     >mdi-cloud-upload-outline</v-icon
@@ -138,6 +145,7 @@ export default class ProjectOverview extends Vue {
   @Prop({ required: true }) project!: Project;
   document: File | null = null;
   fileName = "unknown document";
+  isLoading = false;
 
   async onFileChanged(file?: File) {
     if (file) {
@@ -154,6 +162,7 @@ export default class ProjectOverview extends Vue {
     if (!this.document || !this.project?.id) {
       return;
     }
+    this.isLoading = true;
     await projectsModule.uploadFileToProject({
       document: this.document,
       projectId: this.project.id,
@@ -161,6 +170,7 @@ export default class ProjectOverview extends Vue {
     });
 
     this.deleteDocument();
+    this.isLoading = false;
   }
 
   deleteDocument() {
