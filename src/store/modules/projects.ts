@@ -10,6 +10,8 @@ import { plainToClass } from "class-transformer";
 import store from "@/store/index";
 import { Project } from "@/dtos/Project.dto";
 import { CreateProjectDto } from "@/dtos/create-project.dto";
+import UploadService from "@/api/upload.service";
+const uploadService = new UploadService();
 
 @Module
 export class ProjectsModule extends VuexModule {
@@ -34,6 +36,28 @@ export class ProjectsModule extends VuexModule {
   @Mutation
   removeProject(projectId: string) {
     this.projects = this.projects.filter(p => p.id !== projectId);
+  }
+
+  @Action
+  async uploadFileToProject({
+    document,
+    projectId,
+    fileName
+  }: {
+    document: File;
+    projectId: string;
+    fileName: string;
+  }) {
+    try {
+      const newProject = await uploadService.upload(
+        document,
+        projectId,
+        fileName
+      );
+      this.setProject(newProject);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   @Action

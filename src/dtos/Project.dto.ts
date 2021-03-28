@@ -3,8 +3,11 @@ import { Chapter } from "@/dtos/Chapter.dto";
 import { User } from "@/dtos/User.dto";
 import format from "date-fns/format";
 
-const transformDate = ({ obj }: TransformFnParams): string =>
-  format(new Date(+obj.creationDate), "dd MMMM yyyy");
+const transformDate = ({ obj }: TransformFnParams): string => {
+  return isNaN(+obj.creationDate)
+    ? format(obj.creationDate, "dd MMMM yyyy")
+    : format(new Date(+obj.creationDate), "dd MMMM yyyy");
+};
 
 export class Project {
   @Expose()
@@ -31,8 +34,12 @@ export class Project {
   })
   creationDate?: string;
 
-  @Expose()
   get chaptersCount() {
     return this.chapters.length;
   }
+}
+
+export class RestProject extends Project {
+  @Expose({ name: "_id" })
+  id?: string;
 }

@@ -46,6 +46,12 @@ export default {
     chaptersCount: "Aucun chapitre | {0} chapitre | {0} chapitres",
     create: "Créer un nouveau projet",
     title: "Titre du projet",
-    Description: "Description du projet"
+    description: "Description du projet"
+  },
+  tabs: {
+    overview: "Synthèse",
+    search: "Recherche",
+    entities: "Entités",
+    annotations: "Annotations"
   }
 };

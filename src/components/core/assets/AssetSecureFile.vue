@@ -247,5 +247,5 @@ import { Component } from "vue-property-decorator";
 import BaseAsset from "./BaseAsset";
 
 @Component({ components: { BaseAsset } })
-export default class SecureFileImg extends BaseAsset {}
+export default class AssetSecureFile extends BaseAsset {}
 </script>

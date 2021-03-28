@@ -47,5 +47,11 @@ export default {
     create: "Create new project",
     title: "Project's title",
     description: "Project's description"
+  },
+  tabs: {
+    overview: "Overview",
+    search: "Search",
+    entities: "Entities",
+    annotations: "Annotations"
   }
 };

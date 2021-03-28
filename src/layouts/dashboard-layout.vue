@@ -28,3 +28,7 @@ export default class DashboardLayout extends Vue {
   }
 }
 </script>
+<style lang="stylus">
+#dashboard-layout
+  padding 0 !important
+</style>
