@@ -9,7 +9,7 @@
       </v-list-item-content>
       <v-list-item-action>
         <v-btn icon>
-          <v-icon color="grey lighten-1">mdi-pen</v-icon>
+          <v-icon color="grey lighten-1" v-text="icons.Pen" />
         </v-btn>
       </v-list-item-action>
     </v-list-item>
@@ -29,7 +29,7 @@
               type="file"
               accept=".docx"
               placeholder="Upload File"
-              prepend-icon="mdi-paperclip"
+              :prepend-icon="Icons.PaperClip"
               @change="onFileChanged"
             />
           </v-list-item-subtitle>
@@ -41,16 +41,19 @@
                 clearable
                 placeholder="Name"
                 v-model="fileName"
-                prepend-icon="mdi-file-document-edit-outline"
+                :prepend-icon="icons.DocumentEdit"
                 @click:clear="deleteDocument"
               />
             </v-list-item-subtitle>
             <v-list-item-subtitle class="d-flex justify-center">
               <v-btn color="primary" @click="uploadDocument">
                 {{ isLoading ? $t("global.loading") : $t("global.upload") }}
-                <v-icon v-if="!isLoading" class="ml-2 pb-1" dark
-                  >mdi-cloud-upload-outline</v-icon
-                >
+                <v-icon
+                  v-if="!isLoading"
+                  class="ml-2 pb-1"
+                  dark
+                  v-text="icons.Cloud"
+                />
                 <v-progress-circular
                   v-else
                   size="18"
@@ -68,7 +71,7 @@
             <v-menu offset-y min-width="200">
               <template v-slot:activator="{ attrs, on }">
                 <v-btn icon color="grey lighten-1" v-bind="attrs" v-on="on">
-                  <v-icon dark>mdi-plus</v-icon>
+                  <v-icon v-text="icons.Plus" dark />
                 </v-btn>
               </template>
 
@@ -83,7 +86,7 @@
                         type="file"
                         accept=".docx"
                         placeholder="Upload File"
-                        prepend-icon="mdi-paperclip"
+                        :prepend-icon="icons.PaperClip"
                         @change="onFileChanged"
                       />
                     </v-list-item-subtitle>
@@ -95,7 +98,7 @@
           <template v-if="document">
             <v-list-item>
               <v-list-item-avatar>
-                <v-icon class="red" dark>mdi-text-box-check</v-icon>
+                <v-icon class="red" dark v-text="icons.TextBoxCheck" />
               </v-list-item-avatar>
               <v-list-item-content>
                 <v-list-item-title>
@@ -114,27 +117,24 @@
 
               <v-list-item-action v-if="!isLoading">
                 <v-btn icon @click="uploadDocument">
-                  <v-icon color="grey lighten-1"
-                    >mdi-cloud-upload-outline</v-icon
-                  >
+                  <v-icon color="grey lighten-1" v-text="icons.Cloud" />
                 </v-btn>
               </v-list-item-action>
             </v-list-item>
           </template>
           <v-list-item v-for="chapter in project.chapters" :key="chapter.id">
             <v-list-item-avatar>
-              <v-icon class="blue" dark>mdi-file-document-outline</v-icon>
+              <v-icon class="blue" dark v-text="icons.DocumentEdit" />
             </v-list-item-avatar>
 
             <v-list-item-content>
-              <v-list-item-title v-text="chapter.title"></v-list-item-title>
-
+              <v-list-item-title v-text="chapter.title" />
               <v-list-item-subtitle>date</v-list-item-subtitle>
             </v-list-item-content>
 
             <v-list-item-action>
               <v-btn icon>
-                <v-icon color="grey lighten-1">mdi-dots-horizontal</v-icon>
+                <v-icon color="grey lighten-1" v-text="icons.Dots" />
               </v-btn>
             </v-list-item-action>
           </v-list-item>
@@ -147,6 +147,7 @@
 import { Component, Vue, Prop } from "vue-property-decorator";
 import { Project } from "@/dtos/Project.dto";
 import { projectsModule } from "@/store/modules/projects";
+import { Icons } from "@/components/core/icons/icons-names.enum";
 
 @Component
 export default class ProjectOverview extends Vue {
@@ -154,6 +155,7 @@ export default class ProjectOverview extends Vue {
   document: File | null = null;
   fileName = "unknown document";
   isLoading = false;
+  icons = Icons;
 
   async onFileChanged(file?: File) {
     if (file) {
