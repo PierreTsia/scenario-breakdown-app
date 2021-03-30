@@ -9,7 +9,8 @@ export default {
     username: "Nom d'utilisateur",
     requiredFields: "*indique les champs requis",
     details: "Voir en detail",
-    upload: "Upload"
+    upload: "Upload",
+    loading: "En cours"
   },
   auth: {
     login: "Se connecter",

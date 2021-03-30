@@ -47,8 +47,16 @@
             </v-list-item-subtitle>
             <v-list-item-subtitle class="d-flex justify-center">
               <v-btn color="primary" @click="uploadDocument">
-                {{ $t("global.upload") }}
-                <v-icon class="ml-2 pb-1" dark>mdi-cloud-upload-outline</v-icon>
+                {{ isLoading ? $t("global.loading") : $t("global.upload") }}
+                <v-icon v-if="!isLoading" class="ml-2 pb-1" dark
+                  >mdi-cloud-upload-outline</v-icon
+                >
+                <v-progress-circular
+                  v-else
+                  size="18"
+                  indeterminate
+                  class="ml-2"
+                ></v-progress-circular>
               </v-btn>
             </v-list-item-subtitle>
           </template>
