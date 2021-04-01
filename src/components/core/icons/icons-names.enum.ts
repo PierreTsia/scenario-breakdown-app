@@ -16,5 +16,6 @@ export enum Icons {
   Cloud = "mdi-cloud-upload-outline",
   Menu = "mdi-menu",
   TextBoxCheck = "mdi-text-box-check",
-  Dots = "mdi-dots-horizontal"
+  Dots = "mdi-dots-horizontal",
+  Delete = "mdi-delete"
 }

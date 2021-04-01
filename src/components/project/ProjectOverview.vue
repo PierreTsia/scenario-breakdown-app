@@ -133,9 +133,43 @@
             </v-list-item-content>
 
             <v-list-item-action>
-              <v-btn icon>
-                <v-icon color="grey lighten-1" v-text="icons.Dots" />
-              </v-btn>
+              <v-menu offset-y nudge-left="160" nudge-bottom="5" min-width="200">
+                <template v-slot:activator="{ attrs, on }">
+                  <v-btn icon>
+                    <v-icon
+                      color="grey lighten-1"
+                      v-text="icons.Dots"
+                      v-bind="attrs"
+                      v-on="on"
+                    />
+                  </v-btn>
+                </template>
+
+                <v-list>
+                  <v-list-item-group>
+                    <v-list-item>
+                      <v-list-item-content>
+                        <v-list-item-title
+                          class="d-flex justify-space-between align-center"
+                        >
+                          <span> {{ $t("global.delete") }} </span>
+                          <v-icon v-text="icons.Delete" />
+                        </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-list-item-content>
+                        <v-list-item-title
+                          class="d-flex justify-space-between align-center"
+                        >
+                          <span> {{ $t("global.edit") }} </span>
+                          <v-icon v-text="icons.Pen" />
+                        </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-list>
+              </v-menu>
             </v-list-item-action>
           </v-list-item>
         </template>
@@ -189,3 +223,7 @@ export default class ProjectOverview extends Vue {
   }
 }
 </script>
+<style lang="stylus">
+.v-list-item
+  cursor pointer
+</style>
