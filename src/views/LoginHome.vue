@@ -1,7 +1,7 @@
 <template>
   <v-container fluid :dark="$vuetify.theme.dark">
     <v-row class="mb-6" justify="center" align="center" no-gutters>
-      <v-col sm="12" class="mb-6">
+      <v-col cols="12">
         <v-sheet>
           <h3
             class="text-center subtitle-1"
