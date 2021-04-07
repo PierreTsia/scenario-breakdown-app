@@ -28,6 +28,14 @@ export const PROJECT_BY_ID = gql`
       chapters {
         id
         title
+        paragraphs {
+          id
+          index
+          words
+          annotations {
+            id
+          }
+        }
       }
       creationDate
       createdBy {

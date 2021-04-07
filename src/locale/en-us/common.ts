@@ -10,7 +10,8 @@ export default {
     requiredFields: "*indicates required fields",
     details: "See details",
     upload: "Upload",
-    loading: "Loading"
+    loading: "Loading",
+    annotate: "Annotate"
   },
   auth: {
     login: "Login",

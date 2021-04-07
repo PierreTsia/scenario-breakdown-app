@@ -152,24 +152,14 @@
 
                 <v-list>
                   <v-list-item-group>
-                    <v-list-item>
+                    <v-list-item v-for="item in menuItems" :key="item.label">
                       <v-list-item-content>
                         <v-list-item-title
                           class="d-flex justify-space-between align-center"
-                          @click="deleteChapter(chapter.id)"
+                          @click="item.handler(chapter)"
                         >
-                          <span> {{ $t("global.delete") }} </span>
-                          <v-icon v-text="icons.Delete" />
-                        </v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <v-list-item-title
-                          class="d-flex justify-space-between align-center"
-                        >
-                          <span> {{ $t("global.edit") }} </span>
-                          <v-icon v-text="icons.Pen" />
+                          <span> {{ $t(item.label) }} </span>
+                          <v-icon v-text="item.icon" />
                         </v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
@@ -190,7 +180,10 @@ import { projectsModule } from "@/store/modules/projects";
 import { chaptersModule } from "@/store/modules/chapters";
 
 import { Icons } from "@/components/core/icons/icons-names.enum";
+import { annotateModule } from "@/store/modules/annotate";
+import { Chapter } from "@/dtos/Chapter.dto";
 
+type MenuItem = { label: string; handler: Function; icon: Icons };
 @Component
 export default class ProjectOverview extends Vue {
   @Prop({ required: true }) project!: Project;
@@ -198,6 +191,14 @@ export default class ProjectOverview extends Vue {
   fileName = "unknown document";
   isLoading = false;
   icons = Icons;
+  menuItems: MenuItem[] = [
+    { label: "global.delete", handler: this.deleteChapter, icon: Icons.Delete },
+    {
+      label: "global.annotate",
+      handler: this.startAnnotation,
+      icon: Icons.DocumentEdit
+    }
+  ];
 
   get chapters() {
     return chaptersModule.chapters;
@@ -234,9 +235,12 @@ export default class ProjectOverview extends Vue {
     this.fileName = "unknown document";
   }
 
-  async deleteChapter(chapterId: string) {
-    console.log(chapterId);
-    return await chaptersModule.deleteChapter({ chapterId });
+  async deleteChapter(chapter: Chapter) {
+    return await chaptersModule.deleteChapter({ chapterId: chapter.id });
+  }
+
+  startAnnotation(chapter: Chapter) {
+    return annotateModule.setAnnotatedChapter({ chapter });
   }
 }
 </script>
