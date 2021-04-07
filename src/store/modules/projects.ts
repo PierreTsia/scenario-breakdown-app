@@ -5,12 +5,14 @@ import {
   DELETE_PROJECT,
   USER_PROJECTS,
   PROJECT_BY_ID
-} from "@/api/queries";
+} from "@/api/index.queries";
 import { plainToClass } from "class-transformer";
 import store from "@/store/index";
 import { Project } from "@/dtos/Project.dto";
 import { CreateProjectDto } from "@/dtos/create-project.dto";
 import UploadService from "@/api/upload.service";
+import { chaptersModule } from "@/store/modules/chapters";
+import { Chapter, RestChapter } from "@/dtos/Chapter.dto";
 const uploadService = new UploadService();
 
 @Module
@@ -55,6 +57,11 @@ export class ProjectsModule extends VuexModule {
         fileName
       );
       this.setProject(newProject);
+      chaptersModule.setChapters({
+        chapters: newProject.chapters.map(c =>
+          plainToClass(RestChapter, c, { excludeExtraneousValues: true })
+        )
+      });
     } catch (e) {
       console.error(e);
     }
@@ -72,6 +79,7 @@ export class ProjectsModule extends VuexModule {
         excludeExtraneousValues: true
       });
       this.setProject(project);
+      chaptersModule.setChapters({ chapters: project.chapters });
     } catch (e) {
       console.log(e);
     }

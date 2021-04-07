@@ -6,3 +6,8 @@ export class Chapter {
   @Expose()
   title: string | undefined;
 }
+
+export class RestChapter extends Chapter {
+  @Expose({ name: "_id" })
+  id?: string;
+}

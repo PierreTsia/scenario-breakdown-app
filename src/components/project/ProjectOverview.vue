@@ -29,7 +29,7 @@
               type="file"
               accept=".docx"
               placeholder="Upload File"
-              :prepend-icon="Icons.PaperClip"
+              :prepend-icon="icons.PaperClip"
               @change="onFileChanged"
             />
           </v-list-item-subtitle>
@@ -122,7 +122,7 @@
               </v-list-item-action>
             </v-list-item>
           </template>
-          <v-list-item v-for="chapter in project.chapters" :key="chapter.id">
+          <v-list-item v-for="chapter in chapters" :key="chapter.id">
             <v-list-item-avatar>
               <v-icon class="blue" dark v-text="icons.DocumentEdit" />
             </v-list-item-avatar>
@@ -133,7 +133,12 @@
             </v-list-item-content>
 
             <v-list-item-action>
-              <v-menu offset-y nudge-left="160" nudge-bottom="5" min-width="200">
+              <v-menu
+                offset-y
+                nudge-left="160"
+                nudge-bottom="5"
+                min-width="200"
+              >
                 <template v-slot:activator="{ attrs, on }">
                   <v-btn icon>
                     <v-icon
@@ -151,6 +156,7 @@
                       <v-list-item-content>
                         <v-list-item-title
                           class="d-flex justify-space-between align-center"
+                          @click="deleteChapter(chapter.id)"
                         >
                           <span> {{ $t("global.delete") }} </span>
                           <v-icon v-text="icons.Delete" />
@@ -181,6 +187,8 @@
 import { Component, Vue, Prop } from "vue-property-decorator";
 import { Project } from "@/dtos/Project.dto";
 import { projectsModule } from "@/store/modules/projects";
+import { chaptersModule } from "@/store/modules/chapters";
+
 import { Icons } from "@/components/core/icons/icons-names.enum";
 
 @Component
@@ -190,6 +198,10 @@ export default class ProjectOverview extends Vue {
   fileName = "unknown document";
   isLoading = false;
   icons = Icons;
+
+  get chapters() {
+    return chaptersModule.chapters;
+  }
 
   async onFileChanged(file?: File) {
     if (file) {
@@ -220,6 +232,11 @@ export default class ProjectOverview extends Vue {
   deleteDocument() {
     this.document = null;
     this.fileName = "unknown document";
+  }
+
+  async deleteChapter(chapterId: string) {
+    console.log(chapterId);
+    return await chaptersModule.deleteChapter({ chapterId });
   }
 }
 </script>

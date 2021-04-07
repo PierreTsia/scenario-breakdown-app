@@ -62,6 +62,7 @@ import ProjectEntities from "@/components/project/ProjectEntities.vue";
 import ProjectAnnotations from "@/components/project/ProjectAnnotations.vue";
 import ProjectSearch from "@/components/project/ProjectSearch.vue";
 import ProjectOverview from "@/components/project/ProjectOverview.vue";
+import { chaptersModule } from "@/store/modules/chapters";
 enum Tabs {
   Overview = "overview",
   Search = "search",
@@ -103,6 +104,7 @@ export default class ProjectView extends Vue {
     );
     if (storedProject) {
       projectsModule.setProject(storedProject);
+      chaptersModule.setChapters({ chapters: storedProject.chapters });
     } else {
       await this.fetch();
     }

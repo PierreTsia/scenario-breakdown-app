@@ -1,6 +1,6 @@
 import { VuexModule, Module, Mutation, Action } from "vuex-class-modules";
 import router from "@/router/index";
-import { LOG_IN, ME, SIGN_UP } from "@/api/queries";
+import { LOG_IN, ME, SIGN_UP } from "@/api/index.queries";
 import apolloClient from "@/api/apollo.client";
 import { User } from "@/dtos/User.dto";
 
