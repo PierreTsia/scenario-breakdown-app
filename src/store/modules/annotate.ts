@@ -11,7 +11,7 @@ export class Annotate extends VuexModule {
   }
 
   @Mutation
-  setAnnotatedChapter({ chapter }: { chapter: Chapter }) {
+  setAnnotatedChapter({ chapter }: { chapter: Chapter | null }) {
     this.chapter = chapter;
   }
 }

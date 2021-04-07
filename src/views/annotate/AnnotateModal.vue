@@ -80,9 +80,11 @@ export default class AnnotateModal extends Vue {
   }
 
   get totalWordsCount(): number {
-    return annotateModule.chapter?.paragraphs.reduce(
-      (total: number, p: Paragraph) => (total += p?.wordsCount ?? 0),
-      0
+    return (
+      annotateModule.chapter?.paragraphs.reduce(
+        (total: number, p: Paragraph) => (total += p?.wordsCount ?? 0),
+        0
+      ) ?? 0
     );
   }
 }

@@ -12,7 +12,7 @@ import { Project } from "@/dtos/Project.dto";
 import { CreateProjectDto } from "@/dtos/create-project.dto";
 import UploadService from "@/api/upload.service";
 import { chaptersModule } from "@/store/modules/chapters";
-import { Chapter, RestChapter } from "@/dtos/Chapter.dto";
+import { RestChapter } from "@/dtos/Chapter.dto";
 const uploadService = new UploadService();
 
 @Module

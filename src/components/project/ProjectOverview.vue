@@ -236,7 +236,9 @@ export default class ProjectOverview extends Vue {
   }
 
   async deleteChapter(chapter: Chapter) {
-    return await chaptersModule.deleteChapter({ chapterId: chapter.id });
+    if (chapter.id) {
+      return await chaptersModule.deleteChapter({ chapterId: chapter.id });
+    }
   }
 
   startAnnotation(chapter: Chapter) {
