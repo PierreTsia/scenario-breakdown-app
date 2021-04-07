@@ -99,15 +99,7 @@ export default class ProjectView extends Vue {
   }
 
   async mounted() {
-    const storedProject = projectsModule.projects.find(
-      p => p.id === this.$route.params.id
-    );
-    if (storedProject) {
-      projectsModule.setProject(storedProject);
-      chaptersModule.setChapters({ chapters: storedProject.chapters });
-    } else {
-      await this.fetch();
-    }
+    await this.fetch();
   }
 }
 </script>
