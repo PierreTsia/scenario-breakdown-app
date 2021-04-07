@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import { BASE_URL } from "@/constants";
+import { BASE_URL, FIVE_MIN_IN_MS } from "@/constants";
 import { plainToClass } from "class-transformer";
 import { Project, RestProject } from "@/dtos/Project.dto";
 
@@ -10,7 +10,7 @@ export default class UploadService {
     this.token = localStorage.getItem("token") ?? "";
     this.$upload = axios.create({
       baseURL: `${BASE_URL}`,
-      timeout: 10000,
+      timeout: FIVE_MIN_IN_MS,
       headers: {
         Authorization: `Bearer ${this.token}`,
         "Content-Type": "multipart/form-data"
