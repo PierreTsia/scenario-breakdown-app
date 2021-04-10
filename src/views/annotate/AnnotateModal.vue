@@ -65,12 +65,15 @@ export default class AnnotateModal extends Vue {
   }
   @Watch("paginationIndex")
   async onPageChange(newPage: number) {
-    if (this.needsToFetchNext(newPage) || this.needsToFetchPrevious(newPage)) {
+    if (
+      this.chapter?.id &&
+      (this.needsToFetchNext(newPage) || this.needsToFetchPrevious(newPage))
+    ) {
       const start = this.needsToFetchPrevious(newPage)
         ? newPage - 10
         : newPage - 1;
       await chaptersModule.getChapterParagraphs({
-        chapterId: this.chapter.id,
+        chapterId: this.chapter.id as string,
         start,
         limit: 10
       });
