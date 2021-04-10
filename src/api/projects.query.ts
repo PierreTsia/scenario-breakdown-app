@@ -1,4 +1,14 @@
 import { gql } from "apollo-boost";
+const paragraphsGql = `
+      paragraphs {
+          id
+          index
+          words
+          annotations {
+            id
+          }
+        }`;
+
 export const USER_PROJECTS = gql`
   query {
     projects {
@@ -19,7 +29,8 @@ export const USER_PROJECTS = gql`
   }
 `;
 
-export const PROJECT_BY_ID = gql`
+export const PROJECT_BY_ID = ({ includeParagraphs = false } = {}) =>
+  gql(`
   query($projectId: String!) {
     project(projectId: $projectId) {
       id
@@ -28,14 +39,7 @@ export const PROJECT_BY_ID = gql`
       chapters {
         id
         title
-        paragraphs {
-          id
-          index
-          words
-          annotations {
-            id
-          }
-        }
+        ${includeParagraphs ? paragraphsGql : ""}
       }
       creationDate
       createdBy {
@@ -45,7 +49,7 @@ export const PROJECT_BY_ID = gql`
       }
     }
   }
-`;
+`);
 
 export const CREATE_PROJECT = gql`
   mutation($projectInput: ProjectInput!) {

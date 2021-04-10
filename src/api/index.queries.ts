@@ -5,7 +5,7 @@ import {
   DELETE_PROJECT,
   PROJECT_BY_ID
 } from "@/api/projects.query";
-import { DELETE_CHAPTER } from "@/api/chapters.query";
+import { DELETE_CHAPTER, CHAPTER_PARAGRAPHS } from "@/api/chapters.query";
 export {
   LOG_IN,
   SIGN_UP,
@@ -14,5 +14,6 @@ export {
   CREATE_PROJECT,
   DELETE_PROJECT,
   PROJECT_BY_ID,
-  DELETE_CHAPTER
+  DELETE_CHAPTER,
+  CHAPTER_PARAGRAPHS
 };

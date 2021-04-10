@@ -71,6 +71,5 @@ export default class CreateProjectModal extends Vue {
 
 <style lang="stylus">
 .createProjectModal
-  outline 1px solid red !important
   min-height 800px !important
 </style>

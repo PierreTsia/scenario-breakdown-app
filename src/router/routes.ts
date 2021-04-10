@@ -24,13 +24,24 @@ const routes: Array<RouteConfig> = [
     beforeEnter: AuthGuard
   },
   {
-    path: "/projects/:id",
+    path: "/project/:id",
+    name: "Project",
     meta: {
-      name: "Project",
       requiresAuth: false,
       layout: "dashboard"
     },
-    component: () => import(`@/views/ProjectView.vue`)
+    component: () => import(`@/views/ProjectView.vue`),
+    children: [
+      {
+        path: "annotate",
+        name: "Annotate",
+        meta: {
+          requiresAuth: false,
+          layout: "dashboard"
+        },
+        component: () => import(`@/views/ProjectView.vue`)
+      }
+    ]
   },
   {
     path: "/dashboard",

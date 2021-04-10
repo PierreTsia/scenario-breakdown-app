@@ -1,12 +1,42 @@
-import Vue from "vue";
-import { VuexModule, Module, Action, Mutation } from "vuex-class-modules";
+import {
+  VuexModule,
+  Module,
+  Action,
+  Mutation,
+  RegisterOptions
+} from "vuex-class-modules";
 import store from "@/store/index";
 import { Chapter } from "@/dtos/Chapter.dto";
-import { DELETE_CHAPTER } from "@/api/chapters.query";
+import { CHAPTER_PARAGRAPHS, DELETE_CHAPTER } from "@/api/chapters.query";
 import apolloClient from "@/api/apollo.client";
+import {
+  PaginationMeta,
+  PaginationModule,
+  paginationModule
+} from "@/store/modules/pagination";
+import { plainToClass } from "class-transformer";
+import { Paragraph } from "@/dtos/Paragraph.dto";
+import { annotateModule, AnnotateModule } from "@/store/modules/annotate";
+import { PaginatedDto } from "@/dtos/Paginated.dto";
+
+class ParagraphsInputDto extends PaginatedDto {
+  readonly chapterId!: string;
+}
 
 @Module
 export class ChaptersModule extends VuexModule {
+  private paginationModule: PaginationModule;
+  private annotateModule: AnnotateModule;
+
+  constructor(
+    paginationModule: PaginationModule,
+    annotateModule: AnnotateModule,
+    opts: RegisterOptions
+  ) {
+    super(opts);
+    this.annotateModule = annotateModule;
+    this.paginationModule = paginationModule;
+  }
   chapters: Chapter[] = [];
 
   @Mutation
@@ -20,6 +50,23 @@ export class ChaptersModule extends VuexModule {
     if (index !== -1) {
       this.chapters.splice(index, 1);
     }
+  }
+
+  @Action
+  async getChapterParagraphs(chapterParagraphsInput: ParagraphsInputDto) {
+    const { data } = await apolloClient.query({
+      query: CHAPTER_PARAGRAPHS,
+      variables: { chapterParagraphsInput }
+    });
+    const { meta, results } = data.chapterParagraphs;
+    const paginationMeta: PaginationMeta = plainToClass(PaginationMeta, meta, {
+      excludeExtraneousValues: true
+    });
+    const paragraphs: Paragraph[] = results.map((p: never) =>
+      plainToClass(Paragraph, p, { excludeExtraneousValues: true })
+    );
+    this.paginationModule.setPaginationMeta(paginationMeta);
+    this.annotateModule.setParagraphs(paragraphs);
   }
 
   @Action
@@ -38,4 +85,11 @@ export class ChaptersModule extends VuexModule {
   }
 }
 
-export const chaptersModule = new ChaptersModule({ store, name: "chapters" });
+export const chaptersModule = new ChaptersModule(
+  paginationModule,
+  annotateModule,
+  {
+    store,
+    name: "chapters"
+  }
+);

@@ -22,7 +22,7 @@
       </div>
     </v-card-text>
     <v-card-actions class="pa-4 d-flex justify-end">
-      <v-btn color="primary" @click="$router.push(`/projects/${project.id}`)">
+      <v-btn color="primary" @click="$router.push(`/project/${project.id}`)">
         {{ $t("global.details") }}
       </v-btn>
 

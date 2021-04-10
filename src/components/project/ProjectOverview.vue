@@ -241,8 +241,15 @@ export default class ProjectOverview extends Vue {
     }
   }
 
-  startAnnotation(chapter: Chapter) {
-    return annotateModule.setAnnotatedChapter({ chapter });
+  async startAnnotation(chapter: Chapter) {
+    await chaptersModule.getChapterParagraphs({
+      chapterId: chapter.id as string,
+      start: 0,
+      limit: 10
+    });
+    annotateModule.setAnnotatedChapter({ chapter });
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    await this.$router.push({ name: "Annotate" }).catch((_: unknown) => {});
   }
 }
 </script>

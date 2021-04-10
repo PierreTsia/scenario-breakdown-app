@@ -4,7 +4,7 @@ export class Paragraph {
   @Expose()
   id?: string;
   @Expose()
-  index?: string;
+  index?: number;
   @Expose()
   words: string[] = [];
 
@@ -12,13 +12,3 @@ export class Paragraph {
     return this.words.length;
   }
 }
-/*
-export class Paragraph {
-  @Expose()
-  id?: string;
-  @Expose()
-  index: number;
-  @Expose()
-  words: string[];
-}
-*/

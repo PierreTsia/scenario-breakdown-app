@@ -1,4 +1,10 @@
-import { VuexModule, Module, Action, Mutation } from "vuex-class-modules";
+import {
+  VuexModule,
+  Module,
+  Action,
+  Mutation,
+  RegisterOptions
+} from "vuex-class-modules";
 import apolloClient from "@/api/apollo.client";
 import {
   CREATE_PROJECT,
@@ -9,9 +15,9 @@ import {
 import { plainToClass } from "class-transformer";
 import store from "@/store/index";
 import { Project } from "@/dtos/Project.dto";
-import { CreateProjectDto } from "@/dtos/create-project.dto";
+import { CreateProjectDto } from "@/dtos/CreateProject.dto";
 import UploadService from "@/api/upload.service";
-import { chaptersModule } from "@/store/modules/chapters";
+import { ChaptersModule, chaptersModule } from "@/store/modules/chapters";
 import { RestChapter } from "@/dtos/Chapter.dto";
 const uploadService = new UploadService();
 
@@ -19,6 +25,12 @@ const uploadService = new UploadService();
 export class ProjectsModule extends VuexModule {
   projects: Project[] = [];
   project: Project | null = null;
+  private chaptersModule: ChaptersModule;
+
+  constructor(chaptersModule: ChaptersModule, options: RegisterOptions) {
+    super(options);
+    this.chaptersModule = chaptersModule;
+  }
 
   @Mutation
   setProject(project: Project) {
@@ -57,7 +69,7 @@ export class ProjectsModule extends VuexModule {
         fileName
       );
       this.setProject(newProject);
-      chaptersModule.setChapters({
+      this.chaptersModule.setChapters({
         chapters: newProject.chapters.map(c =>
           plainToClass(RestChapter, c, { excludeExtraneousValues: true })
         )
@@ -68,10 +80,16 @@ export class ProjectsModule extends VuexModule {
   }
 
   @Action
-  async fetchProject(projectId: string) {
+  async fetchProject({
+    projectId,
+    includeParagraphs = false
+  }: {
+    projectId: string;
+    includeParagraphs: boolean;
+  }) {
     try {
       const { data } = await apolloClient.query({
-        query: PROJECT_BY_ID,
+        query: PROJECT_BY_ID({ includeParagraphs }),
         variables: { projectId }
       });
 
@@ -79,7 +97,7 @@ export class ProjectsModule extends VuexModule {
         excludeExtraneousValues: true
       });
       this.setProject(project);
-      chaptersModule.setChapters({ chapters: project.chapters });
+      this.chaptersModule.setChapters({ chapters: project.chapters });
     } catch (e) {
       console.log(e);
     }
@@ -134,4 +152,7 @@ export class ProjectsModule extends VuexModule {
   }
 }
 
-export const projectsModule = new ProjectsModule({ store, name: "projects" });
+export const projectsModule = new ProjectsModule(chaptersModule, {
+  store,
+  name: "projects"
+});

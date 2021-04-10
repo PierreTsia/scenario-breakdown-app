@@ -23,23 +23,25 @@
           <v-list-item-content>
             <v-list-item-title>Content summary</v-list-item-title>
             <v-list-item-subtitle
-              >{{ chapter.paragraphCount }} paragraphs and
-              {{ totalWordsCount }} words</v-list-item-subtitle
-            >
+              >{{ counts.total }} total paragraphs
+            </v-list-item-subtitle>
+            <v-list-item-subtitle
+              >{{ counts.pageNumber + 1 }} / {{ counts.pagesCount + 1 }} pages
+            </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
       <v-divider></v-divider>
       <v-list three-line subheader>
         <v-subheader>Paragraphs</v-subheader>
-        <v-list-item>
-          {{ activeParagraph.words.join(" ") }}
+        <v-list-item v-if="activeWords">
+          {{ activeWords.join(" ") }}
         </v-list-item>
 
         <v-list-item class="justify-center">
           <v-pagination
             v-model="paginationIndex"
-            :length="chapter.paragraphCount"
+            :length="counts.total"
             :total-visible="7"
           />
         </v-list-item>
@@ -50,7 +52,9 @@
 <script lang="ts">
 import { Component, Emit, Prop, Vue, Watch } from "vue-property-decorator";
 import { annotateModule } from "@/store/modules/annotate";
-import { Paragraph } from "@/dtos/Paragraph.dto";
+import { paginationModule } from "@/store/modules/pagination";
+import { chaptersModule } from "@/store/modules/chapters";
+
 @Component
 export default class AnnotateModal extends Vue {
   @Prop({ required: true, default: false, type: Boolean }) isOpened!: boolean;
@@ -58,6 +62,19 @@ export default class AnnotateModal extends Vue {
   @Watch("isOpened", { immediate: true })
   onPropsChanges(newState: boolean) {
     this.dialog = newState;
+  }
+  @Watch("paginationIndex")
+  async onPageChange(newPage: number) {
+    if (this.needsToFetchNext(newPage) || this.needsToFetchPrevious(newPage)) {
+      const start = this.needsToFetchPrevious(newPage)
+        ? newPage - 10
+        : newPage - 1;
+      await chaptersModule.getChapterParagraphs({
+        chapterId: this.chapter.id,
+        start,
+        limit: 10
+      });
+    }
   }
 
   @Emit()
@@ -75,16 +92,22 @@ export default class AnnotateModal extends Vue {
     return annotateModule.chapter;
   }
 
-  get activeParagraph() {
-    return this.chapter?.paragraphs?.[this.paginationIndex - 1];
+  get counts() {
+    return paginationModule.meta;
   }
 
-  get totalWordsCount(): number {
+  get activeWords() {
+    return annotateModule.wordsByParagraphs.get(this.paginationIndex) ?? [];
+  }
+
+  needsToFetchNext(currentIndex: number) {
+    return !annotateModule.wordsByParagraphs.has(currentIndex + 1);
+  }
+
+  needsToFetchPrevious(currentIndex: number) {
     return (
-      annotateModule.chapter?.paragraphs.reduce(
-        (total: number, p: Paragraph) => (total += p?.wordsCount ?? 0),
-        0
-      ) ?? 0
+      currentIndex > 1 &&
+      !annotateModule.wordsByParagraphs.has(currentIndex - 1)
     );
   }
 }

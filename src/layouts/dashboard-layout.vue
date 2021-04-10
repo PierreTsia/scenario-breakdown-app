@@ -34,7 +34,9 @@ export default class DashboardLayout extends Vue {
     this.drawerIsShown = value;
   }
 
-  closeModal() {
+  async closeModal() {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    await this.$router.push({ name: "Project" }).catch(_ => {});
     return annotateModule.setAnnotatedChapter({ chapter: null });
   }
 }

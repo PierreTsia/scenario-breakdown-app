@@ -26,7 +26,7 @@ import CreateProjectModal from "@/components/CreateProjectModal.vue";
 
 import { projectsModule } from "@/store/modules/projects";
 import { plainToClass } from "class-transformer";
-import { CreateProjectDto } from "@/dtos/create-project.dto";
+import { CreateProjectDto } from "@/dtos/CreateProject.dto";
 
 @Component({
   components: { Settings, Projects, CreateProjectModal, Dashboard }
