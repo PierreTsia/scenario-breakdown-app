@@ -248,8 +248,10 @@ export default class ProjectOverview extends Vue {
       limit: 10
     });
     annotateModule.setAnnotatedChapter({ chapter });
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    await this.$router.push({ name: "Annotate" }).catch((_: unknown) => {});
+    await this.$router
+      .push({ name: "Annotate", params: { chapterId: chapter.id as string } })
+      // eslint-disable-next-line @typescript-eslint/no-empty-function,@typescript-eslint/no-unused-vars
+      .catch((_: unknown) => {});
   }
 }
 </script>

@@ -15,12 +15,12 @@
         </v-sheet>
       </v-col>
       <v-col sm="12" md="6" lg="5" xl="4">
-        <LoginCard
+        <login-card
           v-if="activeMethod === signMethod.Login"
           class="mx-auto"
           @on-login-confirm-click="auth.login"
         />
-        <SignupCard
+        <signup-card
           v-if="activeMethod === signMethod.Signup"
           class="mx-auto"
           @on-signup-confirm-click="auth.signup"

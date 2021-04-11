@@ -1,6 +1,6 @@
 <template>
   <v-container fluid dark :class="['pt-16', { 'px-1': isMobile }]">
-    <AssetInspection
+    <asset-inspection
       :width="$vuetify.breakpoint.xsOnly ? 200 : 400"
       :height="$vuetify.breakpoint.xsOnly ? 200 : 400"
       class="asset"
@@ -94,8 +94,9 @@ export default class ProjectView extends Vue {
   }
 
   async fetch() {
+    console.log(this.$route.params);
     await projectsModule.fetchProject({
-      projectId: this.$route.params.id,
+      projectId: this.$route.params.projectId,
       includeParagraphs: false
     });
   }

@@ -1,8 +1,8 @@
 <template>
   <v-app dark :style="{ background: $vuetify.theme.themes[theme].background }">
-    <Drawer :is-opened="drawerIsShown" @on-drawer-input-change="toggleDrawer" />
-    <Toolbar @on-drawer-icon-click="toggleDrawer" />
-    <AnnotateModal :is-opened="isAnnotating" @on-close-modal="closeModal" />
+    <drawer :is-opened="drawerIsShown" @on-drawer-input-change="toggleDrawer" />
+    <toolbar @on-drawer-icon-click="toggleDrawer" />
+    <annotate-modal :is-opened="isAnnotating" @on-close-modal="closeModal" />
     <v-main>
       <v-fade-transition mode="in-out">
         <v-container fluid id="dashboard-layout">
@@ -35,8 +35,13 @@ export default class DashboardLayout extends Vue {
   }
 
   async closeModal() {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    await this.$router.push({ name: "Project" }).catch(_ => {});
+    await this.$router
+      .push({
+        name: "Project",
+        params: { projectId: this.$route.params.projectId }
+      })
+      // eslint-disable-next-line @typescript-eslint/no-empty-function,@typescript-eslint/no-unused-vars
+      .catch(_ => {});
     return annotateModule.setAnnotatedChapter({ chapter: null });
   }
 }

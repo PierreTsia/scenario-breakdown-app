@@ -7,7 +7,7 @@
         <span class="mr-6">
           {{ $t(`menu.${$route.name}`) }}
         </span>
-        <CreateProjectModal
+        <create-project-modal
           v-if="activeComponent === 'projects'"
           @on-create-project="createProject"
         />
