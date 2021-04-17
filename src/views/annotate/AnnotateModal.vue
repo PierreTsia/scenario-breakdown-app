@@ -67,8 +67,7 @@ import { Component, Emit, Prop, Vue, Watch } from "vue-property-decorator";
 import ParagraphViewer from "@/views/annotate/ParagraphViewer.vue";
 import { annotateModule, Word } from "@/store/modules/annotate";
 import { paginationModule } from "@/store/modules/pagination";
-import { chaptersModule } from "@/store/modules/chapters";
-import { range } from "lodash";
+import range from "lodash/range";
 
 @Component({ components: { ParagraphViewer } })
 export default class AnnotateModal extends Vue {
@@ -77,22 +76,6 @@ export default class AnnotateModal extends Vue {
   @Watch("isOpened", { immediate: true })
   onPropsChanges(newState: boolean) {
     this.dialog = newState;
-  }
-  @Watch("paginationIndex")
-  async onPageChange(newPage: number) {
-    if (
-      this.chapter?.id &&
-      (this.needsToFetchNext(newPage) || this.needsToFetchPrevious(newPage))
-    ) {
-      const start = this.needsToFetchPrevious(newPage)
-        ? newPage - 10
-        : newPage - 1;
-      await chaptersModule.getChapterParagraphs({
-        chapterId: this.chapter.id as string,
-        start,
-        limit: this.numberOfParagraphsPerPage < 50 ? 20 : 50
-      });
-    }
   }
 
   @Emit()
@@ -105,7 +88,7 @@ export default class AnnotateModal extends Vue {
   sound = true;
   widgets = false;
   paginationIndex = 1;
-  numberOfParagraphsPerPage = 3;
+  numberOfParagraphsPerPage = 10;
 
   get chapter() {
     return annotateModule.chapter;
@@ -129,21 +112,6 @@ export default class AnnotateModal extends Vue {
     return range(
       this.paginationIndex,
       this.paginationIndex + this.numberOfParagraphsPerPage
-    );
-  }
-
-  needsToFetchNext(currentIndex: number) {
-    return !annotateModule.wordsByParagraphs.has(
-      currentIndex + this.numberOfParagraphsPerPage
-    );
-  }
-
-  needsToFetchPrevious(currentIndex: number) {
-    return (
-      currentIndex > this.numberOfParagraphsPerPage &&
-      !annotateModule.wordsByParagraphs.has(
-        currentIndex - this.numberOfParagraphsPerPage
-      )
     );
   }
 }

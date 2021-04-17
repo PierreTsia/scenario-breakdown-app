@@ -7,12 +7,18 @@ export class PaginationMeta {
   result = 0;
   @Expose()
   total = 0;
+
   @Expose()
-  currentPage = 1;
+  pageIndex = 0;
+
   @Expose()
   pagesCount = 0;
   @Expose()
   pageSize = 0;
+
+  get currentPage() {
+    return this.pageIndex + 1;
+  }
 }
 
 @Module

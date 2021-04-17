@@ -54,12 +54,6 @@
                   dark
                   v-text="icons.Cloud"
                 />
-                <v-progress-circular
-                  v-else
-                  size="18"
-                  indeterminate
-                  class="ml-2"
-                ></v-progress-circular>
               </v-btn>
             </v-list-item-subtitle>
           </template>
@@ -103,11 +97,6 @@
               <v-list-item-content>
                 <v-list-item-title>
                   <v-text-field v-model="fileName" v-if="!isLoading" />
-                  <v-progress-linear
-                    v-else
-                    indeterminate
-                    color="yellow darken-2"
-                  />
                 </v-list-item-title>
 
                 <v-list-item-subtitle>{{
@@ -171,6 +160,7 @@
         </template>
       </v-list-item-content>
     </v-list-item>
+    <v-progress-linear v-if="isLoading" indeterminate color="yellow darken-2" />
   </v-container>
 </template>
 <script lang="ts">
@@ -242,12 +232,14 @@ export default class ProjectOverview extends Vue {
   }
 
   async startAnnotation(chapter: Chapter) {
+    this.isLoading = true;
     await chaptersModule.getChapterParagraphs({
       chapterId: chapter.id as string,
-      start: 0,
-      limit: 10
+      start: 0
     });
     annotateModule.setAnnotatedChapter({ chapter });
+    this.isLoading = false;
+
     await this.$router
       .push({ name: "Annotate", params: { chapterId: chapter.id as string } })
       // eslint-disable-next-line @typescript-eslint/no-empty-function,@typescript-eslint/no-unused-vars
