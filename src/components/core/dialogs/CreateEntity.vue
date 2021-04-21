@@ -21,6 +21,17 @@
           label="Entity Description"
           class="my-2"
         />
+        <v-autocomplete
+          v-model="project"
+          :items="projects"
+          :loading="isLoading"
+          :search-input.sync="searchInput"
+          outlined
+          dense
+          chips
+          small-chips
+          label="Outlined"
+        />
       </v-form>
     </v-card-text>
     <v-card-actions class="justify-end pa-4">
@@ -40,10 +51,20 @@ import { ValidationError } from "class-validator";
 
 @Component({ components: { VSwatches } })
 export default class CreateEntity extends Vue {
+  entityName = "";
+  entityDescription = "";
+  color = "#1CA085";
+  errors: ValidationError[] = [];
+  searchInput = null;
+  project = null;
+  isLoading = false;
+  projects = [];
+
   @Emit()
   onCloseClick() {
     return;
   }
+
   async onCreateClick() {
     const entityInput = new CreateEntityInput();
     entityInput.color = this.color;
@@ -56,10 +77,6 @@ export default class CreateEntity extends Vue {
     }
   }
 
-  entityName = "";
-  entityDescription = "";
-  color = "#1CA085";
-  errors: ValidationError[] = [];
   //color = "pouet";
 }
 </script>
