@@ -11,7 +11,8 @@ export default {
     details: "Voir en detail",
     upload: "Upload",
     loading: "En cours",
-    annotate: "Annoter"
+    annotate: "Annoter",
+    createNew: "Créer nouveau"
   },
   auth: {
     login: "Se connecter",

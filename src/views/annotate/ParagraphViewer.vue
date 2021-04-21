@@ -1,8 +1,5 @@
 <template>
   <v-container>
-    <v-btn color="primary" elevation="2" fab>
-      <v-icon v-text="icons.Plus" />
-    </v-btn>
     <v-list>
       <v-list-item class="justify-center">
         <v-row class="d-inline-flex pa-4" v-click-outside="onClickOutside">
@@ -13,6 +10,7 @@
           >
             <span
               v-for="item in words"
+              :ref="`item-${item.uniqId}`"
               @click="handleClick(item)"
               :key="item.uniqId"
               :dragSelectAttr="item.uniqId"
@@ -29,18 +27,36 @@
   </v-container>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch, Emit } from "vue-property-decorator";
 import { Word } from "@/store/modules/annotate";
 import DragSelect from "drag-select-vue";
 import first from "lodash/first";
 import last from "lodash/last";
 import { Icons } from "@/components/core/icons/icons-names.enum";
+
+const FLOATING_BTN = ["floatingBtn", "floatingBtn__icon", "floatingBtn__btn"];
+
 @Component({ components: { DragSelect } })
 export default class ParagraphViewer extends Vue {
   @Prop({ default: [] })
   paragraphs!: Word[][];
   boundaries: string[] = [];
   icons = Icons;
+
+  @Emit()
+  @Watch("boundaries")
+  onBoundariesChange(boundaries: string[]) {
+    if (boundaries?.length >= 1) {
+      const lastEl: any = this.$refs[`item-${boundaries[1]}`];
+      const top = lastEl[0].getBoundingClientRect()?.top;
+      const left = lastEl[0].getBoundingClientRect()?.left;
+
+      return {
+        coords: { top, left },
+        draftAnnotation: this.selectedWords
+      };
+    }
+  }
 
   get selectedWords() {
     return this.paragraphs.flat().filter(this.isInRange);
@@ -50,7 +66,11 @@ export default class ParagraphViewer extends Vue {
     return this.paragraphs.flat();
   }
 
-  onClickOutside() {
+  onClickOutside(e: any) {
+    if (FLOATING_BTN.includes(e?.target?.id)) {
+      return;
+    }
+
     this.boundaries = [];
   }
 

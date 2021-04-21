@@ -17,5 +17,6 @@ export enum Icons {
   Menu = "mdi-menu",
   TextBoxCheck = "mdi-text-box-check",
   Dots = "mdi-dots-horizontal",
-  Delete = "mdi-delete"
+  Delete = "mdi-delete",
+  DotVertical = "mdi-dots-vertical"
 }

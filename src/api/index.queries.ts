@@ -6,6 +6,7 @@ import {
   PROJECT_BY_ID
 } from "@/api/projects.query";
 import { DELETE_CHAPTER, CHAPTER_PARAGRAPHS } from "@/api/chapters.query";
+import { CREATE_ENTITY } from "@/api/entities.query";
 export {
   LOG_IN,
   SIGN_UP,
@@ -15,5 +16,6 @@ export {
   DELETE_PROJECT,
   PROJECT_BY_ID,
   DELETE_CHAPTER,
-  CHAPTER_PARAGRAPHS
+  CHAPTER_PARAGRAPHS,
+  CREATE_ENTITY
 };

@@ -173,7 +173,7 @@ import { Icons } from "@/components/core/icons/icons-names.enum";
 import { annotateModule } from "@/store/modules/annotate";
 import { Chapter } from "@/dtos/Chapter.dto";
 
-type MenuItem = { label: string; handler: Function; icon: Icons };
+export type MenuItem = { label: string; handler: Function; icon: Icons };
 @Component
 export default class ProjectOverview extends Vue {
   @Prop({ required: true }) project!: Project;

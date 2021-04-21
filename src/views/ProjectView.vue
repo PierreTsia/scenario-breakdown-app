@@ -94,7 +94,6 @@ export default class ProjectView extends Vue {
   }
 
   async fetch() {
-    console.log(this.$route.params);
     await projectsModule.fetchProject({
       projectId: this.$route.params.projectId,
       includeParagraphs: false

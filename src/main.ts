@@ -6,7 +6,7 @@ import vuetify from "./plugins/vuetify";
 import apolloProvider from "@/plugins/apollo";
 import { i18n } from "@/plugins/i18n";
 import "reflect-metadata";
-
+import "vue-swatches/dist/vue-swatches.css";
 Vue.config.productionTip = false;
 
 new Vue({

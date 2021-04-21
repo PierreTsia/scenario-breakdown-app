@@ -27,13 +27,9 @@ export class AppModule extends VuexModule {
 
   @Mutation
   setTheme(theme: "dark" | "light") {
-    console.log("theme muta", theme);
     localStorage.setItem("theme", theme);
-    console.log(vuetify);
     this.theme = theme;
     vuetify.preset.theme.dark = theme === "dark";
-    console.log(Vue.prototype);
-    //Vue.prototype.$vuetify.theme.dark = theme === "dark";
   }
 }
 

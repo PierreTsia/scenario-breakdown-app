@@ -93,6 +93,5 @@ export class AuthModule extends VuexModule {
   }
 }
 
-// register module (could be in any file)
 import store from "@/store/index";
 export const authModule = new AuthModule({ store, name: "auth" });
