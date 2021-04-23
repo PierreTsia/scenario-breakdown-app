@@ -51,11 +51,12 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
   </v-row>
 </template>
 <script lang="ts">
 import { Component, Vue, Emit } from "vue-property-decorator";
-@Component({})
+@Component
 export default class CreateProjectModal extends Vue {
   dialog = false;
   description = "A mock description";
