@@ -2,6 +2,7 @@ export enum Icons {
   PaperClip = "mdi-paperclip",
   Earth = "mdi-earth",
   Pen = "mdi-pen",
+  Close = "mdi-close",
   Plus = "mdi-plus",
   Night = "mdi-weather-night",
   Sunny = "mdi-weather-sunny",
@@ -18,5 +19,7 @@ export enum Icons {
   TextBoxCheck = "mdi-text-box-check",
   Dots = "mdi-dots-horizontal",
   Delete = "mdi-delete",
-  DotVertical = "mdi-dots-vertical"
+  DotVertical = "mdi-dots-vertical",
+  Badge = "mdi-badge-account",
+  Save = "mdi-content-save"
 }
