@@ -14,10 +14,11 @@
               @click="handleClick(item)"
               :key="item.uniqId"
               :dragSelectAttr="item.uniqId"
+              :style="wordStyles(item)"
               :class="
-                isInRange(item) ? ['accent--text', 'font-weight-bold'] : ''
+                isDragSelected(item) ? ['accent--text', 'font-weight-bold'] : ''
               "
-              class="d-inline-block word pa-0 ma-2 primary--text"
+              class="d-inline-block word  primary--text"
               >{{ item.label }}
             </span>
           </drag-select>
@@ -33,6 +34,8 @@ import DragSelect from "drag-select-vue";
 import first from "lodash/first";
 import last from "lodash/last";
 import { Icons } from "@/components/core/icons/icons-names.enum";
+import { annotateModule } from "@/store/modules/annotate";
+import { Annotation } from "@/dtos/Annotation.dto";
 
 const FLOATING_BTN = ["floatingBtn", "floatingBtn__icon", "floatingBtn__btn"];
 
@@ -40,11 +43,11 @@ const FLOATING_BTN = ["floatingBtn", "floatingBtn__icon", "floatingBtn__btn"];
 export default class ParagraphViewer extends Vue {
   @Prop({ default: [] })
   paragraphs!: Word[][];
-  boundaries: string[] = [];
+  dragSelectBoundaries: string[] = [];
   icons = Icons;
 
   @Emit()
-  @Watch("boundaries")
+  @Watch("dragSelectBoundaries")
   onBoundariesChange(boundaries: string[]) {
     if (boundaries?.length >= 1) {
       const lastEl: any = this.$refs[`item-${boundaries[1]}`];
@@ -59,11 +62,39 @@ export default class ParagraphViewer extends Vue {
   }
 
   get selectedWords() {
-    return this.paragraphs.flat().filter(this.isInRange);
+    return this.paragraphs
+      .flat()
+      .filter(p => this.isInRange(p, this.dragSelectBoundaries));
+  }
+
+  get annotations(): Annotation[] {
+    return annotateModule.annotations;
   }
 
   get words() {
     return this.paragraphs.flat();
+  }
+
+  wordAnnotationColor(word: Word): string {
+    const annotation = this.annotations.find(a => {
+      return this.isInRange(word, this.getBoundaries(a));
+    });
+    return annotation?.entity?.color || "red";
+  }
+
+  bgColor(word: Word) {
+    if (!this.isAnnotated(word)) {
+      return "transparent";
+    }
+    return this.wordAnnotationColor(word);
+  }
+
+  wordStyles(word: Word) {
+    return {
+      backgroundColor: this.bgColor(word),
+      padding: this.isAnnotated(word) ? "0 10px" : "0",
+      margin: this.isAnnotated(word) ? "10px 0px" : "10px 10px"
+    };
   }
 
   onClickOutside(e: any) {
@@ -71,16 +102,31 @@ export default class ParagraphViewer extends Vue {
       return;
     }
 
-    this.boundaries = [];
+    this.dragSelectBoundaries = [];
   }
 
-  isSelected(uniqId: string) {
-    return this.selectedWords.some(w => w.uniqId === uniqId);
+  getBoundaries(annotation: Annotation): string[] {
+    return [
+      `${annotation.start.paragraphIndex}-${annotation.start.wordIndex}`,
+      `${annotation.end.paragraphIndex}-${annotation.end.wordIndex}`
+    ];
   }
 
-  isInRange(item: Word): boolean {
-    if (!this.boundaries?.length) return false;
-    const [startCoords, endCoords] = this.getCoords(this.boundaries);
+  get annotationsBoundaries(): string[][] {
+    return this.annotations.map(this.getBoundaries);
+  }
+
+  isAnnotated(word: Word) {
+    return this.annotationsBoundaries.some(b => this.isInRange(word, b));
+  }
+
+  isDragSelected(word: Word) {
+    return this.isInRange(word, this.dragSelectBoundaries);
+  }
+
+  isInRange(item: Word, boundaries?: string[]): boolean {
+    if (!boundaries?.length) return false;
+    const [startCoords, endCoords] = this.getCoords(boundaries);
 
     return (
       this.isAfterStart(item, startCoords) && this.isBeforeEnd(item, endCoords)
@@ -102,11 +148,11 @@ export default class ParagraphViewer extends Vue {
 
   handleChange(draggedItems: string[]) {
     if (draggedItems?.length < 2) return;
-    this.boundaries = [first(draggedItems)!, last(draggedItems)!];
+    this.dragSelectBoundaries = [first(draggedItems)!, last(draggedItems)!];
   }
 
   handleClick(item: Word) {
-    this.boundaries = [item.uniqId, item.uniqId];
+    this.dragSelectBoundaries = [item.uniqId, item.uniqId];
   }
 
   getCoords([first, last]: string[]): number[][] {
