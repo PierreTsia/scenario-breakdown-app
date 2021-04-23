@@ -6,10 +6,7 @@
     />
     <toolbar @on-drawer-icon-click="toggleDrawer" />
     <base-modal :is-opened.sync="openDialog" />
-    <annotate-modal
-      :is-opened.sync="isAnnotating"
-      @on-close-modal="closeModal"
-    />
+    <annotate-modal :is-opened.sync="isAnnotating" @on-close="closeModal" />
     <annotate-panel
       :is-opened="isBottomSheetOpened"
       @on-close="closeBottomSheet"
@@ -63,10 +60,6 @@ export default class DashboardLayout extends Vue {
     annotateModule.setDraftAnnotation(null);
   }
 
-  closeBaseModal() {
-    return dialogModule.closeDialog();
-  }
-
   async closeModal() {
     await this.$router
       .push({
@@ -76,6 +69,10 @@ export default class DashboardLayout extends Vue {
       // eslint-disable-next-line @typescript-eslint/no-empty-function,@typescript-eslint/no-unused-vars
       .catch(_ => {});
     return annotateModule.setAnnotatedChapter({ chapter: null });
+  }
+
+  closeBaseModal() {
+    return dialogModule.closeDialog();
   }
 }
 </script>
