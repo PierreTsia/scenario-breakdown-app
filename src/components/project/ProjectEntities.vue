@@ -23,10 +23,13 @@
           </v-list>
         </v-menu>
       </v-card-title>
-      <data-table :items="desserts" :columns="properties">
+      <data-table :items="entities" :columns="properties">
         <template v-slot:default="slotProps">
           <td v-for="prop in properties" :key="prop">
-            {{ slotProps.item[prop] }}
+            <v-chip :color="slotProps.item[prop]" v-if="prop === 'color'">
+              {{ slotProps.item[prop] }}</v-chip
+            >
+            <span v-else> {{ slotProps.item[prop] }}</span>
           </td>
         </template>
       </data-table>
@@ -39,11 +42,13 @@ import { Component, Vue } from "vue-property-decorator";
 import { Icons } from "@/components/core/icons/icons-names.enum";
 import { MenuItem } from "@/components/project/ProjectOverview.vue";
 import { dialogModule, DialogName } from "@/store/modules/dialog";
+import { entitiesModule } from "@/store/modules/entities";
 
 @Component({ components: { DataTable } })
 export default class ProjectEntities extends Vue {
-  properties = ["name", "calories"];
+  properties = ["label", "color"];
   icons = Icons;
+  isLoading = false;
 
   items: MenuItem[] = [
     {
@@ -52,52 +57,18 @@ export default class ProjectEntities extends Vue {
       icon: Icons.Plus
     }
   ];
-  desserts = [
-    {
-      name: "Frozen Yogurt",
-      calories: 159
-    },
-    {
-      name: "Ice cream sandwich",
-      calories: 237
-    },
-    {
-      name: "Eclair",
-      calories: 262
-    },
-    {
-      name: "Cupcake",
-      calories: 305
-    },
-    {
-      name: "Gingerbread",
-      calories: 356
-    },
-    {
-      name: "Jelly bean",
-      calories: 375
-    },
-    {
-      name: "Lollipop",
-      calories: 392
-    },
-    {
-      name: "Honeycomb",
-      calories: 408
-    },
-    {
-      name: "Donut",
-      calories: 452
-    },
-    {
-      name: "KitKat",
-      calories: 518
-    }
-  ];
+
+  async mounted() {
+    this.isLoading = true;
+    await entitiesModule.fetchEntities();
+    this.isLoading = false;
+  }
+  get entities() {
+    return entitiesModule.entities;
+  }
 
   openCreateEntityDialog() {
     return dialogModule.setActiveDialog({ name: DialogName.CreateEntity });
   }
-
 }
 </script>
