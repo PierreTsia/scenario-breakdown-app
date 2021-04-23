@@ -8,6 +8,21 @@ export const PROJECT_ENTITIES = gql`
       label
       project {
         id
+        creationDate
+      }
+    }
+  }
+`;
+
+export const ALL_ENTITIES = gql`
+  query {
+    userEntities {
+      id
+      color
+      label
+      project {
+        id
+        creationDate
       }
     }
   }
