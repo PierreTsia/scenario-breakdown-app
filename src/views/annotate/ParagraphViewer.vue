@@ -28,7 +28,7 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Vue, Watch, Emit } from "vue-property-decorator";
-import { Word } from "@/store/modules/annotate";
+import { Word } from "@/dtos/Word.dto";
 import DragSelect from "drag-select-vue";
 import first from "lodash/first";
 import last from "lodash/last";

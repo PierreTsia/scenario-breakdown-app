@@ -85,12 +85,12 @@ import { Annotation, AnnotationInput } from "@/dtos/Annotation.dto";
 import { ValidationError } from "class-validator";
 
 @Component
-export default class BottomSheet extends OpenCloseMixin {
+export default class AnnotatePanel extends OpenCloseMixin {
   icons = Icons;
   state: { label: string; entity: Entity | null } = { label: "", entity: null };
   errors: ValidationError[] = [];
   annotation: Annotation | null = null;
-  @Watch("state", { deep: true, immediate: true })
+  @Watch("state", { deep: true })
   async onStateChange(state: { label: string; entity: Entity | null }) {
     const annotation: Annotation = plainToClass(Annotation, {
       ...state,
@@ -104,11 +104,8 @@ export default class BottomSheet extends OpenCloseMixin {
       this.errors = await annotation.errors();
     }
   }
-  @Watch("entities", { immediate: true })
-  async onEntitiesChange(ent?: Entity[]) {
-    if (!ent?.length) {
-      await entitiesModule.fetchEntities();
-    }
+  async mounted() {
+    await entitiesModule.fetchEntities();
   }
 
   async createAnnotation() {
