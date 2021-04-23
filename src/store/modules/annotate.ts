@@ -1,26 +1,17 @@
-import { Module, Mutation, VuexModule } from "vuex-class-modules";
+import { Action, Module, Mutation, VuexModule } from "vuex-class-modules";
 import store from "@/store/index";
 import { Chapter } from "@/dtos/Chapter.dto";
 import { Paragraph } from "@/dtos/Paragraph.dto";
-import { Expose, plainToClass } from "class-transformer";
+import { plainToClass } from "class-transformer";
+import { Word } from "@/dtos/Word.dto";
+import {
+  Annotation,
+  AnnotationInput,
+  DraftAnnotation
+} from "@/dtos/Annotation.dto";
+import apolloClient from "@/api/apollo.client";
+import { CREATE_ANNOTATION, PROJECT_ANNOTATIONS } from "@/api/index.queries";
 
-export class Word {
-  @Expose()
-  readonly paragraphId!: string;
-
-  @Expose()
-  readonly label!: string;
-
-  @Expose()
-  readonly paragraphIndex!: number;
-
-  @Expose()
-  readonly wordIndex!: number;
-
-  get uniqId(): string {
-    return `${this.paragraphIndex}-${this.wordIndex}`;
-  }
-}
 const mapWords = (
   acc: Map<number, Word[]>,
   p: Paragraph
@@ -47,9 +38,42 @@ export class AnnotateModule extends VuexModule {
   chapter: Chapter | null = null;
   paragraphs: Paragraph[] = [];
   wordsByParagraphs: Map<number, Word[]> = new Map();
+  editedAnnotation: DraftAnnotation | Annotation | null = null;
+  annotations: Annotation[] = [];
 
   get isAnnotating(): boolean {
     return !!this.chapter;
+  }
+
+  get isCreatingAnnotation() {
+    return !!this.editedAnnotation;
+  }
+
+  @Action
+  async createAnnotation(input: AnnotationInput) {
+    const { data } = await apolloClient.mutate({
+      mutation: CREATE_ANNOTATION,
+      variables: { input }
+    });
+    const newAnnotation = plainToClass(Annotation, data.annotate, {
+      excludeExtraneousValues: true
+    });
+    this.addAnnotation(newAnnotation);
+  }
+
+  @Action
+  async fetchAnnotations(projectId: string) {
+    const { data } = await apolloClient.query({
+      query: PROJECT_ANNOTATIONS,
+      variables: { projectId }
+    });
+    this.setAnnotations(
+      data.projectAnnotations.map((a: never) =>
+        plainToClass(Annotation, a, {
+          excludeExtraneousValues: true
+        })
+      )
+    );
   }
 
   @Mutation
@@ -63,6 +87,24 @@ export class AnnotateModule extends VuexModule {
       mapWords,
       this.wordsByParagraphs
     );
+  }
+
+  @Mutation
+  setAnnotations(annotations: Annotation[]) {
+    this.annotations = annotations;
+  }
+
+  @Mutation
+  addAnnotation(annotation: Annotation) {
+    this.annotations = [
+      annotation,
+      ...this.annotations.filter(a => a?.id !== annotation.id)
+    ];
+  }
+
+  @Mutation
+  setDraftAnnotation(annotation: DraftAnnotation | null) {
+    this.editedAnnotation = annotation;
   }
 }
 
