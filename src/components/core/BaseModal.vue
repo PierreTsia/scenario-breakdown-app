@@ -1,36 +1,20 @@
 <template>
   <v-dialog
-    v-model="dialog"
+    v-model="isShown"
     transition="dialog-bottom-transition"
     max-width="800"
   >
-    <component :is="activeDialog" @on-close-click="onClose" />
+    <component :is="activeDialog" @on-close="onClose" />
   </v-dialog>
 </template>
 
 <script lang="ts">
-import { Component, Emit, Prop, Vue, Watch } from "vue-property-decorator";
+import { Component } from "vue-property-decorator";
 import CreateEntity from "@/components/core/dialogs/CreateEntity.vue";
-import { dialogModule } from "@/store/modules/dialog";
+import OpenCloseMixin from "@/components/mixins/OpenClose.mixin";
 
 @Component({ components: { CreateEntity } })
-export default class BaseModal extends Vue {
-  @Prop({ required: true, default: false, type: Boolean }) isOpened!: boolean;
-
-  @Watch("isOpened", { immediate: true })
-  onPropsChanges(newState: boolean) {
-    this.dialog = newState;
-  }
-
-  @Emit()
-  onCloseModal() {
-    return;
-  }
-
-  onClose() {
-    return dialogModule.closeDialog();
-  }
-  dialog = false;
+export default class BaseModal extends OpenCloseMixin {
   activeDialog = "create-entity";
 }
 </script>
