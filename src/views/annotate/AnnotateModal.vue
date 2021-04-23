@@ -1,19 +1,19 @@
 <template>
   <v-dialog
-    v-model="dialog"
+    v-model="isShown"
     fullscreen
     hide-overlay
     transition="dialog-bottom-transition"
   >
     <v-card v-if="chapter" class="annotate-modal">
       <v-toolbar dark color="primary">
-        <v-btn icon dark @click="onCloseModal">
+        <v-btn icon dark @click="onClose">
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-toolbar-title>{{ chapter.title }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn dark text @click="dialog = false">
+          <v-btn dark text @click="onClose">
             Save
           </v-btn>
         </v-toolbar-items>
@@ -30,6 +30,7 @@
           :style="{ top: coords.top, left: coords.left }"
           dark
           fab
+          @click="openAnnotationPanel"
         >
           <v-icon id="floatingBtn__icon" v-text="icons.Plus" />
         </v-btn>
@@ -81,41 +82,44 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Emit, Prop, Vue, Watch } from "vue-property-decorator";
+import { Component, Watch } from "vue-property-decorator";
 import ParagraphViewer from "@/views/annotate/ParagraphViewer.vue";
-import { annotateModule, Word } from "@/store/modules/annotate";
+import OpenCloseMixin from "@/components/mixins/OpenClose.mixin";
+import { annotateModule } from "@/store/modules/annotate";
 import { paginationModule } from "@/store/modules/pagination";
+import { authModule } from "@/store/modules/auth";
 import { Icons } from "@/components/core/icons/icons-names.enum";
-
+import { Word } from "@/dtos/Word.dto";
 import range from "lodash/range";
 import debounce from "lodash/debounce";
+import { Chapter } from "@/dtos/Chapter.dto";
+import { User } from "@/dtos/User.dto";
+import { DraftAnnotationFactory } from "@/factories/draft-annotation.factory";
 
 type Coords = { top: number; left: number };
 @Component({ components: { ParagraphViewer } })
-export default class AnnotateModal extends Vue {
-  @Prop({ required: true, default: false, type: Boolean }) isOpened!: boolean;
-
-  @Watch("isOpened", { immediate: true })
-  onPropsChanges(newState: boolean) {
-    this.dialog = newState;
-  }
-
-  @Emit()
-  onCloseModal() {
-    return;
-  }
-  dialog = false;
+export default class AnnotateModal extends OpenCloseMixin {
   paginationIndex = 1;
   numberOfParagraphsPerPage = 10;
   icons = Icons;
   direction = "top";
   coords = { top: "500px", left: "20px" };
-  draft = [];
+  draft: Word[] = [];
 
   handleSelectedDebounced = debounce(this.onSelectedText, 300);
 
+  @Watch("isShown")
+  async onVisible(isShown: boolean) {
+    if (isShown) {
+      await annotateModule.fetchAnnotations(this.$route.params.projectId);
+    }
+  }
+
   get chapter() {
     return annotateModule.chapter;
+  }
+  get me() {
+    return authModule.currentUser;
   }
 
   get counts() {
@@ -144,7 +148,7 @@ export default class AnnotateModal extends Vue {
     draftAnnotation
   }: {
     coords: Coords;
-    draftAnnotation: never[];
+    draftAnnotation: Word[];
   }) {
     if (coords) {
       const containerEl = this.$refs.viewer as any;
@@ -156,6 +160,20 @@ export default class AnnotateModal extends Vue {
       };
     }
     this.draft = draftAnnotation;
+  }
+
+  async openAnnotationPanel() {
+    if (this.draft?.length) {
+      if (!this.me) {
+        await authModule.getCurrentUser();
+      }
+      const factory = new DraftAnnotationFactory(
+        this.draft,
+        this.chapter as Chapter,
+        this.me as User
+      );
+      annotateModule.setDraftAnnotation(factory.create());
+    }
   }
 }
 </script>
