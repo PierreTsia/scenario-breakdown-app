@@ -7,6 +7,12 @@ import { parseISO } from "date-fns";
 const transformDate = ({ obj }: TransformFnParams): string =>
   format(parseISO(obj.creationDate), "dd MMMM yyyy");
 
+export enum Status {
+  Uploaded = "UPLOADED",
+  Parsed = "PARSED",
+  Analyzed = "ANALYZED"
+}
+
 export class Project {
   @Expose()
   id?: string;
@@ -16,6 +22,9 @@ export class Project {
 
   @Expose()
   description?: string;
+
+  @Expose()
+  status!: Status;
 
   @Expose()
   @Type(() => Chapter)

@@ -40,10 +40,15 @@ export class AnnotationInput {
   @Transform(({ value }) => value.id)
   entity!: string;
 
+  @Expose({ name: "chapter" })
+  @IsMongoId()
+  @Transform(({ value }) => value.id)
+  chapterId!: string;
+
   @Expose()
   @IsMongoId()
   @Transform(({ value }) => value.id)
-  chapter!: string;
+  projectId!: string;
 
   @Expose()
   start!: Coord;

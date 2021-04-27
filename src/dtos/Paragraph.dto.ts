@@ -6,9 +6,24 @@ export class Paragraph {
   @Expose()
   index?: number;
   @Expose()
-  words: string[] = [];
+  tokens: Token[] = [];
+  @Expose()
+  fullText!: string[];
 
   get wordsCount() {
-    return this.words.length;
+    return this.tokens.filter(t => t.tag === "word")?.length;
   }
+}
+
+export class Token {
+  @Expose()
+  value!: string;
+  @Expose()
+  tag!: string;
+  @Expose()
+  entityType?: string;
+  @Expose()
+  uid?: string;
+  @Expose()
+  originalSeq?: string[];
 }

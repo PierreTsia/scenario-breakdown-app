@@ -65,6 +65,7 @@ export class ChaptersModule extends VuexModule {
     const paragraphs: Paragraph[] = results.map((p: never) =>
       plainToClass(Paragraph, p, { excludeExtraneousValues: true })
     );
+    console.log(paragraphs);
     this.paginationModule.setPaginationMeta(paginationMeta);
     this.annotateModule.setParagraphs(paragraphs);
   }

@@ -9,6 +9,7 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 import { namespace } from "vuex-class";
 import DefaultLayout from "@/layouts/default-layout.vue";
 import DashboardLayout from "@/layouts/dashboard-layout.vue";
+import UploadService from "@/api/upload.service";
 
 const appModule = namespace("app");
 

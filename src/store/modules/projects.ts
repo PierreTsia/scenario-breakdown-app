@@ -63,14 +63,14 @@ export class ProjectsModule extends VuexModule {
     fileName: string;
   }) {
     try {
-      const newProject = await uploadService.upload(
+      const updatedProject = await uploadService.upload(
         document,
         projectId,
         fileName
       );
-      this.setProject(newProject);
+      this.setProject(updatedProject);
       this.chaptersModule.setChapters({
-        chapters: newProject.chapters.map(c =>
+        chapters: updatedProject.chapters.map(c =>
           plainToClass(RestChapter, c, { excludeExtraneousValues: true })
         )
       });

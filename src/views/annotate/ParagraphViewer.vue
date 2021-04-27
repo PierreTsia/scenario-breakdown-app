@@ -3,11 +3,7 @@
     <v-list>
       <v-list-item class="justify-center">
         <v-row class="d-inline-flex pa-4" v-click-outside="onClickOutside">
-          <drag-select
-            attribute="dragSelectAttr"
-            @change="handleChange"
-            class="pa-4"
-          >
+          <drag-select attribute="dragSelectAttr" @change="handleChange">
             <span
               v-for="item in words"
               :ref="`item-${item.uniqId}`"
@@ -19,7 +15,7 @@
                 isDragSelected(item) ? ['accent--text', 'font-weight-bold'] : ''
               "
               class="d-inline-block word  primary--text"
-              >{{ item.label }}
+              >{{ item.value }}
             </span>
           </drag-select>
         </v-row>
@@ -82,6 +78,32 @@ export default class ParagraphViewer extends Vue {
     return annotation?.entity?.color || "red";
   }
 
+  spacePunctuation(value: string): string {
+    let margin = "0 -10px 0 -10px";
+    switch (value) {
+      case ",":
+        margin = "0 5px 0 -10px";
+        break;
+      case ".":
+        margin = "0 5px 0 -10px";
+        break;
+      case ":":
+        margin = "0 5px 0 5px";
+        break;
+      case "-":
+        margin = "0 -10px 0 -10px";
+        break;
+    }
+    return margin;
+  }
+
+  wordMargin(word: Word): string {
+    if (word.tag === "punctuation") {
+      return this.spacePunctuation(word.value);
+    }
+    return this.isAnnotated(word) ? "10px 0px" : "10px 10px";
+  }
+
   bgColor(word: Word) {
     if (!this.isAnnotated(word)) {
       return "transparent";
@@ -93,7 +115,7 @@ export default class ParagraphViewer extends Vue {
     return {
       backgroundColor: this.bgColor(word),
       padding: this.isAnnotated(word) ? "0 10px" : "0",
-      margin: this.isAnnotated(word) ? "10px 0px" : "10px 10px"
+      margin: this.wordMargin(word)
     };
   }
 

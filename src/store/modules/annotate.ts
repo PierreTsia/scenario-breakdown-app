@@ -18,17 +18,13 @@ const mapWords = (
 ): Map<number, Word[]> => {
   return acc.set(
     p.index!,
-    p.words.map((w, i) =>
-      plainToClass(
-        Word,
-        {
-          label: w,
-          paragraphIndex: p.index,
-          paragraphId: p.id,
-          wordIndex: i
-        },
-        { excludeExtraneousValues: true }
-      )
+    p.tokens.map((t, i) =>
+      plainToClass(Word, {
+        ...t,
+        paragraphIndex: p.index,
+        paragraphId: p.id,
+        wordIndex: i
+      })
     )
   );
 };

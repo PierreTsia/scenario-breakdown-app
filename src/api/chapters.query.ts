@@ -22,7 +22,11 @@ export const CHAPTER_PARAGRAPHS = gql`
       results {
         id
         index
-        words
+        tokens { 
+          tag
+          value
+        }
+        fullText
       }
     }
   }

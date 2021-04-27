@@ -39,6 +39,7 @@ export const PROJECT_BY_ID = ({ includeParagraphs = false } = {}) =>
       chapters {
         id
         title
+        status
         ${includeParagraphs ? paragraphsGql : ""}
       }
       creationDate

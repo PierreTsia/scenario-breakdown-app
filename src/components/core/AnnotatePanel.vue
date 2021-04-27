@@ -109,9 +109,14 @@ export default class AnnotatePanel extends OpenCloseMixin {
   }
 
   async createAnnotation() {
-    const input = plainToClass(AnnotationInput, this.annotation, {
-      excludeExtraneousValues: true
-    });
+    const input = plainToClass(
+      AnnotationInput,
+      { ...this.annotation, projectId: this.$route.params.projectId },
+      {
+        excludeExtraneousValues: true
+      }
+    );
+    console.log(input);
     await annotateModule.createAnnotation(input);
     this.onClose();
   }

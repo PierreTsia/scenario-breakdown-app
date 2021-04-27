@@ -18,6 +18,16 @@ export default class UploadService {
     });
   }
 
+  async chapterStatusSubscribe(chapterName: string) {
+    const eventSource = new EventSource(
+      `${BASE_URL}/projects/sse/${chapterName}`
+    );
+    console.log(eventSource);
+    eventSource.onmessage = ({ data }) => {
+      console.log("New message", data);
+    };
+  }
+
   async upload(
     document: File,
     projectId: string,
@@ -32,6 +42,8 @@ export default class UploadService {
       "/projects/chapter/upload",
       formData
     );
+    await this.chapterStatusSubscribe(chapterName!);
+
     return plainToClass(RestProject, data);
   }
 }

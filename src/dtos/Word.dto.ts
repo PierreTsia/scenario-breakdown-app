@@ -1,6 +1,7 @@
 import { Expose } from "class-transformer";
+import { Token } from "@/dtos/Paragraph.dto";
 
-export class Word {
+export class Word extends Token {
   @Expose()
   readonly paragraphId!: string;
 
