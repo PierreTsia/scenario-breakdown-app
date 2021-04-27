@@ -18,6 +18,7 @@ import { plainToClass } from "class-transformer";
 import { Paragraph } from "@/dtos/Paragraph.dto";
 import { annotateModule, AnnotateModule } from "@/store/modules/annotate";
 import { PaginatedDto } from "@/dtos/Paginated.dto";
+import { Status } from "@/dtos/Project.dto";
 
 class ParagraphsInputDto extends PaginatedDto {
   readonly chapterId!: string;
@@ -52,6 +53,29 @@ export class ChaptersModule extends VuexModule {
     }
   }
 
+  @Mutation
+  updateChapterStatus({
+    chapterId,
+    status
+  }: {
+    chapterId: string;
+    status: Status;
+  }) {
+    const index = this.chapters.findIndex(({ id }) => id === chapterId);
+
+    if (index !== -1 && this.chapters[index].status !== status) {
+      const updatedChapter = plainToClass(Chapter, {
+        ...this.chapters[index],
+        status
+      });
+
+      this.chapters = [
+        ...this.chapters.filter(c => c.id !== updatedChapter.id),
+        updatedChapter
+      ];
+    }
+  }
+
   @Action
   async getChapterParagraphs(chapterParagraphsInput: ParagraphsInputDto) {
     const { data } = await apolloClient.query({
@@ -65,7 +89,6 @@ export class ChaptersModule extends VuexModule {
     const paragraphs: Paragraph[] = results.map((p: never) =>
       plainToClass(Paragraph, p, { excludeExtraneousValues: true })
     );
-    console.log(paragraphs);
     this.paginationModule.setPaginationMeta(paginationMeta);
     this.annotateModule.setParagraphs(paragraphs);
   }

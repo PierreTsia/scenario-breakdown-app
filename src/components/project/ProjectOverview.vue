@@ -116,8 +116,17 @@
               <v-icon class="blue" dark v-text="icons.DocumentEdit" />
             </v-list-item-avatar>
 
-            <v-list-item-content>
-              <v-list-item-title v-text="chapter.title" />
+            <v-list-item-content class="px-4">
+              <v-badge
+                dot
+                overlap
+                bottom
+                :color="
+                  chapter.status === 'PARSED' ? 'success' : 'yellow accent-4'
+                "
+              >
+                <v-list-item-title v-text="chapter.title" />
+              </v-badge>
               <v-list-item-subtitle>date</v-list-item-subtitle>
             </v-list-item-content>
 
@@ -129,7 +138,7 @@
                 min-width="200"
               >
                 <template v-slot:activator="{ attrs, on }">
-                  <v-btn icon>
+                  <v-btn icon :disabled="chapter.status === 'UPLOADED'">
                     <v-icon
                       color="grey lighten-1"
                       v-text="icons.Dots"
@@ -164,7 +173,7 @@
   </v-container>
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from "vue-property-decorator";
+import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import { Project } from "@/dtos/Project.dto";
 import { projectsModule } from "@/store/modules/projects";
 import { chaptersModule } from "@/store/modules/chapters";
@@ -189,6 +198,14 @@ export default class ProjectOverview extends Vue {
       icon: Icons.DocumentEdit
     }
   ];
+
+  @Watch("chapters", { immediate: true, deep: true })
+  onChaptersChange(newVal: Chapter[], oldVal?: Chapter[]) {
+    /* updating one array element status fails to trigger vue-dom reactivity */
+    if (oldVal?.length && newVal.length === oldVal.length) {
+      this.$forceUpdate();
+    }
+  }
 
   get chapters() {
     return chaptersModule.chapters;

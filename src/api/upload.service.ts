@@ -1,7 +1,8 @@
 import axios, { AxiosInstance } from "axios";
 import { BASE_URL, FIVE_MIN_IN_MS } from "@/constants";
 import { plainToClass } from "class-transformer";
-import { Project, RestProject } from "@/dtos/Project.dto";
+import { Project, RestProject, Status } from "@/dtos/Project.dto";
+import { chaptersModule } from "@/store/modules/chapters";
 
 export default class UploadService {
   private readonly token: string;
@@ -18,13 +19,18 @@ export default class UploadService {
     });
   }
 
-  async chapterStatusSubscribe(chapterName: string) {
+  async chapterStatusSubscribe(chapterId: string) {
     const eventSource = new EventSource(
-      `${BASE_URL}/projects/sse/${chapterName}`
+      `${BASE_URL}/projects/chapter/status/${chapterId}`
     );
-    console.log(eventSource);
     eventSource.onmessage = ({ data }) => {
-      console.log("New message", data);
+      const parsed = JSON.parse(data);
+      console.log(parsed);
+      const { id, status } = parsed;
+      chaptersModule.updateChapterStatus({ chapterId: id, status });
+      if (status === Status.Parsed) {
+        eventSource.close();
+      }
     };
   }
 
@@ -42,7 +48,6 @@ export default class UploadService {
       "/projects/chapter/upload",
       formData
     );
-    await this.chapterStatusSubscribe(chapterName!);
 
     return plainToClass(RestProject, data);
   }

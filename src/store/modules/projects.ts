@@ -18,7 +18,7 @@ import { Project } from "@/dtos/Project.dto";
 import { CreateProjectDto } from "@/dtos/CreateProject.dto";
 import UploadService from "@/api/upload.service";
 import { ChaptersModule, chaptersModule } from "@/store/modules/chapters";
-import { RestChapter } from "@/dtos/Chapter.dto";
+import { Chapter, RestChapter } from "@/dtos/Chapter.dto";
 const uploadService = new UploadService();
 
 @Module
@@ -68,12 +68,18 @@ export class ProjectsModule extends VuexModule {
         projectId,
         fileName
       );
+      const chapters = updatedProject.chapters.map(c =>
+        plainToClass(RestChapter, c, { excludeExtraneousValues: true })
+      );
       this.setProject(updatedProject);
       this.chaptersModule.setChapters({
-        chapters: updatedProject.chapters.map(c =>
-          plainToClass(RestChapter, c, { excludeExtraneousValues: true })
-        )
+        chapters
       });
+      const newChapter = chapters.find(c => c.title === fileName);
+
+      if (newChapter) {
+        await uploadService.chapterStatusSubscribe(newChapter?.id!);
+      }
     } catch (e) {
       console.error(e);
     }

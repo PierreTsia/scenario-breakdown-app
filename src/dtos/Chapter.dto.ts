@@ -1,5 +1,6 @@
 import { Expose, Type } from "class-transformer";
 import { Paragraph } from "@/dtos/Paragraph.dto";
+import { Status } from "@/dtos/Project.dto";
 
 export class Chapter {
   @Expose()
@@ -9,6 +10,8 @@ export class Chapter {
   @Expose()
   @Type(() => Paragraph)
   paragraphs: Paragraph[] = [];
+  @Expose()
+  status!: Status;
 
   get paragraphCount(): number {
     return this.paragraphs?.length ?? 0;
