@@ -32,6 +32,7 @@ import last from "lodash/last";
 import { Icons } from "@/components/core/icons/icons-names.enum";
 import { annotateModule } from "@/store/modules/annotate";
 import { Annotation } from "@/dtos/Annotation.dto";
+import { Punct, PunctuationHelper } from "@/helpers/punctuation.helper";
 
 const FLOATING_BTN = ["floatingBtn", "floatingBtn__icon", "floatingBtn__btn"];
 
@@ -41,6 +42,7 @@ export default class ParagraphViewer extends Vue {
   paragraphs!: Word[][];
   dragSelectBoundaries: string[] = [];
   icons = Icons;
+  punctuationHelper = new PunctuationHelper();
 
   @Emit()
   @Watch("dragSelectBoundaries")
@@ -78,28 +80,9 @@ export default class ParagraphViewer extends Vue {
     return annotation?.entity?.color || "red";
   }
 
-  spacePunctuation(value: string): string {
-    let margin = "0 -10px 0 -10px";
-    switch (value) {
-      case ",":
-        margin = "0 5px 0 -10px";
-        break;
-      case ".":
-        margin = "0 5px 0 -10px";
-        break;
-      case ":":
-        margin = "0 5px 0 5px";
-        break;
-      case "-":
-        margin = "0 -10px 0 -10px";
-        break;
-    }
-    return margin;
-  }
-
   wordMargin(word: Word): string {
-    if (word.tag === "punctuation") {
-      return this.spacePunctuation(word.value);
+    if (word.tag === "punctuation" || ["»", " «"].includes(word.value)) {
+      return this.punctuationHelper.spacePunctuationWord(word.value as Punct);
     }
     return this.isAnnotated(word) ? "10px 0px" : "10px 10px";
   }
