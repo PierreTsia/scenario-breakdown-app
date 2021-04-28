@@ -25,7 +25,6 @@ export default class UploadService {
     );
     eventSource.onmessage = ({ data }) => {
       const parsed = JSON.parse(data);
-      console.log(parsed);
       const { id, status } = parsed;
       chaptersModule.updateChapterStatus({ chapterId: id, status });
       if (status === Status.Parsed) {

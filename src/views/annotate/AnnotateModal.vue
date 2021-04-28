@@ -18,23 +18,38 @@
           </v-btn>
         </v-toolbar-items>
       </v-toolbar>
-      <div
-        id="floatingBtn"
-        class="pa-1"
-        v-show="draft && draft.length"
-        color="primary"
-        small
+
+      <v-speed-dial
+        v-model="isTagBtnShown"
+        v-if="draft && draft.length"
+        direction="right"
+        absolute
+        transition="slide-x-transition"
+        :style="{ top: coords.top, left: coords.left }"
       >
-        <v-btn
-          id="floatingBtn__btn"
-          :style="{ top: coords.top, left: coords.left }"
-          dark
-          fab
-          @click="openAnnotationPanel"
-        >
-          <v-icon id="floatingBtn__icon" v-text="icons.Plus" />
+        <template v-slot:activator>
+          <v-btn
+            v-model="isTagBtnShown"
+            color="blue darken-2"
+            class="tagBtn pa-4"
+            dark
+            fab
+          >
+            <v-icon v-if="isTagBtnShown" class="tagBtn">
+              mdi-close
+            </v-icon>
+            <v-icon v-else class="tagBtn">
+              mdi-pencil
+            </v-icon>
+          </v-btn>
+        </template>
+        <v-btn fab dark small color="green" class="tagBtn">
+          <v-icon class="tagBtn">mdi-stamper </v-icon>
         </v-btn>
-      </div>
+        <v-btn fab dark small color="red" class="tagBtn">
+          <v-icon class="tagBtn">mdi-delete</v-icon>
+        </v-btn>
+      </v-speed-dial>
 
       <v-list three-line subheader>
         <v-list-item>
@@ -96,15 +111,14 @@ import { Chapter } from "@/dtos/Chapter.dto";
 import { User } from "@/dtos/User.dto";
 import { DraftAnnotationFactory } from "@/factories/draft-annotation.factory";
 
-type Coords = { top: number; left: number };
 @Component({ components: { ParagraphViewer } })
 export default class AnnotateModal extends OpenCloseMixin {
   paginationIndex = 1;
   numberOfParagraphsPerPage = 10;
   icons = Icons;
-  direction = "top";
   coords = { top: "500px", left: "20px" };
   draft: Word[] = [];
+  isTagBtnShown = false;
 
   handleSelectedDebounced = debounce(this.onSelectedText, 300);
 

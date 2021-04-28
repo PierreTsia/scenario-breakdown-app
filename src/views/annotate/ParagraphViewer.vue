@@ -1,26 +1,37 @@
 <template>
-  <v-container>
-    <v-list>
-      <v-list-item class="justify-center">
-        <v-row class="d-inline-flex pa-4" v-click-outside="onClickOutside">
-          <drag-select attribute="dragSelectAttr" @change="handleChange">
-            <span
-              v-for="item in words"
-              :ref="`item-${item.uniqId}`"
-              @click="handleClick(item)"
-              :key="item.uniqId"
-              :dragSelectAttr="item.uniqId"
-              :style="wordStyles(item)"
-              :class="
-                isDragSelected(item) ? ['accent--text', 'font-weight-bold'] : ''
-              "
-              class="d-inline-block word  primary--text"
-              >{{ item.value }}
-            </span>
-          </drag-select>
-        </v-row>
-      </v-list-item>
-    </v-list>
+  <v-container
+    :class="isDarkMode ? ['grey', 'darken-4'] : ['grey', 'lighten-4']"
+    class="py-12 px-0 px-sm-12"
+  >
+    <v-card flat tile>
+      <v-list
+        :class="isDarkMode ? ['grey', 'darken-4'] : ['grey', 'lighten-4']"
+      >
+        <v-list-item class="justify-center">
+          <v-row class="d-inline-flex" v-click-outside="onClickOutside">
+            <drag-select attribute="dragSelectAttr" @change="handleChange">
+              <span
+                v-for="item in words"
+                :ref="`item-${item.uniqId}`"
+                @click="handleClick(item)"
+                :key="item.uniqId"
+                :dragSelectAttr="item.uniqId"
+                :style="wordStyles(item)"
+                :class="
+                  isDragSelected(item)
+                    ? ['accent--text', 'font-weight-bold']
+                    : isDarkMode
+                    ? 'white--text'
+                    : 'black--text'
+                "
+                class="d-inline-block word"
+                >{{ item.value }}
+              </span>
+            </drag-select>
+          </v-row>
+        </v-list-item>
+      </v-list>
+    </v-card>
   </v-container>
 </template>
 <script lang="ts">
@@ -31,10 +42,11 @@ import first from "lodash/first";
 import last from "lodash/last";
 import { Icons } from "@/components/core/icons/icons-names.enum";
 import { annotateModule } from "@/store/modules/annotate";
+import { appModule } from "@/store/modules/app";
 import { Annotation } from "@/dtos/Annotation.dto";
 import { Punct, PunctuationHelper } from "@/helpers/punctuation.helper";
 
-const FLOATING_BTN = ["floatingBtn", "floatingBtn__icon", "floatingBtn__btn"];
+const TAG_BTN = "tagBtn";
 
 @Component({ components: { DragSelect } })
 export default class ParagraphViewer extends Vue {
@@ -49,7 +61,7 @@ export default class ParagraphViewer extends Vue {
   onBoundariesChange(boundaries: string[]) {
     if (boundaries?.length >= 1) {
       const lastEl: any = this.$refs[`item-${boundaries[1]}`];
-      const top = lastEl[0].getBoundingClientRect()?.top;
+      const top = lastEl[0].getBoundingClientRect()?.top + 50;
       const left = lastEl[0].getBoundingClientRect()?.left;
 
       return {
@@ -57,6 +69,10 @@ export default class ParagraphViewer extends Vue {
         draftAnnotation: this.selectedWords
       };
     }
+  }
+
+  get isDarkMode(): boolean {
+    return appModule.isDark;
   }
 
   get selectedWords() {
@@ -73,6 +89,10 @@ export default class ParagraphViewer extends Vue {
     return this.paragraphs.flat();
   }
 
+  isAPunctuation(word: Word) {
+    return word.tag === "punctuation" || ["»", " «"].includes(word.value);
+  }
+
   wordAnnotationColor(word: Word): string {
     const annotation = this.annotations.find(a => {
       return this.isInRange(word, this.getBoundaries(a));
@@ -81,29 +101,35 @@ export default class ParagraphViewer extends Vue {
   }
 
   wordMargin(word: Word): string {
-    if (word.tag === "punctuation" || ["»", " «"].includes(word.value)) {
+    if (this.isAPunctuation(word)) {
       return this.punctuationHelper.spacePunctuationWord(word.value as Punct);
     }
-    return this.isAnnotated(word) ? "10px 0px" : "10px 10px";
+    return this.isAnnotated(word) ? "5px 0px" : "5px 10px";
   }
 
   bgColor(word: Word) {
-    if (!this.isAnnotated(word)) {
+    if (
+      this.isAPunctuation(word) ||
+      (!this.isAnnotated(word) && !this.isDragSelected(word))
+    ) {
       return "transparent";
     }
-    return this.wordAnnotationColor(word);
+
+    return this.isDragSelected(word)
+      ? "#B3E5FC66"
+      : this.wordAnnotationColor(word);
   }
 
   wordStyles(word: Word) {
     return {
-      backgroundColor: this.bgColor(word),
+      "--bg-color": this.bgColor(word),
       padding: this.isAnnotated(word) ? "0 10px" : "0",
       margin: this.wordMargin(word)
     };
   }
 
-  onClickOutside(e: any) {
-    if (FLOATING_BTN.includes(e?.target?.id)) {
+  onClickOutside(e: Event) {
+    if (e.target.className.split(" ").includes(TAG_BTN)) {
       return;
     }
 
@@ -168,4 +194,15 @@ export default class ParagraphViewer extends Vue {
 <style scoped lang="stylus">
 .word
   word-break break-all
+  position relative
+  z-index 2
+  &:before
+    content ""
+    position absolute
+    width calc(100% + 20px)
+    height 100%
+    top 0
+    left 0
+    background-color var(--bg-color)
+    z-index 1
 </style>
