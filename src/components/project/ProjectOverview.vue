@@ -252,7 +252,8 @@ export default class ProjectOverview extends Vue {
     this.isLoading = true;
     await chaptersModule.getChapterParagraphs({
       chapterId: chapter.id as string,
-      start: 0
+      start: 0,
+      limit: 50
     });
     annotateModule.setAnnotatedChapter({ chapter });
     this.isLoading = false;

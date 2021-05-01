@@ -7,26 +7,44 @@
       <v-list
         :class="isDarkMode ? ['grey', 'darken-4'] : ['grey', 'lighten-4']"
       >
-        <v-list-item class="justify-center">
-          <v-row class="d-inline-flex" v-click-outside="onClickOutside">
-            <drag-select attribute="dragSelectAttr" @change="handleChange">
-              <span
+        <v-list-item class="justify-center r">
+          <v-row
+            class="d-inline-flex justify-start relative"
+            v-click-outside="onClickOutside"
+          >
+            <v-menu
+              v-model="showMenu"
+              absolute
+              offset-y
+              :position-y="menuPosition.y"
+              :position-x="menuPosition.x"
+              transition="scale-transition"
+            >
+              <v-list>
+                <v-list-item v-for="(item, index) in items" :key="index">
+                  <v-list-item-title>{{ item.title }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+            <drag-select
+              class="word--container d-inline-flex"
+              attribute="dragSelectAttr"
+              @change="handleChange"
+            >
+              <div
                 v-for="item in words"
                 :ref="`item-${item.uniqId}`"
-                @click="handleClick(item)"
+                @click="e => handleClick(item, e)"
                 :key="item.uniqId"
                 :dragSelectAttr="item.uniqId"
                 :style="wordStyles(item)"
-                :class="
-                  isDragSelected(item)
-                    ? ['accent--text', 'font-weight-bold']
-                    : isDarkMode
-                    ? 'white--text'
-                    : 'black--text'
-                "
-                class="d-inline-block word"
-                >{{ item.value }}
-              </span>
+                :class="wordClasses(item)"
+                class="word"
+              >
+                <span>
+                  {{ item.value }}
+                </span>
+              </div>
             </drag-select>
           </v-row>
         </v-list-item>
@@ -35,7 +53,7 @@
   </v-container>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue, Watch, Emit } from "vue-property-decorator";
+import { Component, Emit, Prop, Vue, Watch } from "vue-property-decorator";
 import { Word } from "@/dtos/Word.dto";
 import DragSelect from "drag-select-vue";
 import first from "lodash/first";
@@ -52,9 +70,14 @@ const TAG_BTN = "tagBtn";
 export default class ParagraphViewer extends Vue {
   @Prop({ default: [] })
   paragraphs!: Word[][];
+  @Prop({ default: [] })
+  fullText!: string[];
   dragSelectBoundaries: string[] = [];
   icons = Icons;
   punctuationHelper = new PunctuationHelper();
+  items = [{ title: "bonjour hugo" }, { title: "Click Me" }];
+  showMenu = false;
+  menuPosition = { x: 500, y: 500 };
 
   @Emit()
   @Watch("dragSelectBoundaries")
@@ -97,21 +120,18 @@ export default class ParagraphViewer extends Vue {
     const annotation = this.annotations.find(a => {
       return this.isInRange(word, this.getBoundaries(a));
     });
-    return annotation?.entity?.color || "red";
+    return `${annotation?.entity?.color}66` || "red";
   }
 
   wordMargin(word: Word): string {
     if (this.isAPunctuation(word)) {
       return this.punctuationHelper.spacePunctuationWord(word.value as Punct);
     }
-    return this.isAnnotated(word) ? "5px 0px" : "5px 10px";
+    return "0 2px";
   }
 
   bgColor(word: Word) {
-    if (
-      this.isAPunctuation(word) ||
-      (!this.isAnnotated(word) && !this.isDragSelected(word))
-    ) {
+    if (!this.isAnnotated(word) && !this.isDragSelected(word)) {
       return "transparent";
     }
 
@@ -123,13 +143,33 @@ export default class ParagraphViewer extends Vue {
   wordStyles(word: Word) {
     return {
       "--bg-color": this.bgColor(word),
-      padding: this.isAnnotated(word) ? "0 10px" : "0",
       margin: this.wordMargin(word)
     };
   }
 
-  onClickOutside(e: Event) {
-    if (e.target.className.split(" ").includes(TAG_BTN)) {
+  isLastWordOfParagraph(word: Word): boolean {
+    const par = this.paragraphs.find(
+      words => words[0]?.paragraphId === word.paragraphId
+    );
+    const following = par?.[word.wordIndex + 1];
+    return !following;
+  }
+
+  wordClasses(word: Word) {
+    let classes: string[] = [];
+    if (this.isDragSelected(word)) {
+      classes = ["accent--text", "font-weight-bold"];
+    }
+    const color = this.isDarkMode ? "white" : "black";
+    classes.push(`${color}--text`);
+    if (this.isLastWordOfParagraph(word)) {
+      classes.push("--isLastWord");
+    }
+    return classes;
+  }
+
+  onClickOutside(e: any) {
+    if (e?.target?.className?.split(" ")?.includes(TAG_BTN)) {
       return;
     }
 
@@ -182,7 +222,13 @@ export default class ParagraphViewer extends Vue {
     this.dragSelectBoundaries = [first(draggedItems)!, last(draggedItems)!];
   }
 
-  handleClick(item: Word) {
+  handleClick(item: Word, event: any) {
+    if (this.isAnnotated(item)) {
+      console.log(event);
+      this.menuPosition = { x: event.clientX, y: event.clientY };
+      this.dragSelectBoundaries = [];
+      return (this.showMenu = !this.showMenu);
+    }
     this.dragSelectBoundaries = [item.uniqId, item.uniqId];
   }
 
@@ -192,17 +238,34 @@ export default class ParagraphViewer extends Vue {
 }
 </script>
 <style scoped lang="stylus">
-.word
-  word-break break-all
-  position relative
-  z-index 2
-  &:before
-    content ""
-    position absolute
-    width calc(100% + 20px)
-    height 100%
-    top 0
-    left 0
-    background-color var(--bg-color)
-    z-index 1
+.word--container
+  flex-wrap wrap
+  .word
+    word-break break-all
+    position relative
+    z-index 2
+    height 20px
+    &:before
+      content ""
+      position absolute
+      width calc(100% + 4px)
+      height 100%
+      top 0
+      left calc(0-2px)
+      background-color var(--bg-color)
 </style>
+
+<!--
+
+
+&.--isLastWord
+      outline 1px solid saddlebrown
+      &:after
+        content ''
+        position relative
+        top 0
+        left 100%
+        width 200px
+        border 1px solid red
+        margin-right calc(100vw - 100px)
+-->

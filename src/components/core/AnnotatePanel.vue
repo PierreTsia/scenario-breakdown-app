@@ -1,14 +1,10 @@
 <template>
   <v-bottom-sheet v-model="isShown" persistent>
     <v-sheet class="text-center grey darken-2" height="500px">
-      <v-card
-        flat
-        class="grey darken-2 d-flex flex-column justify-center"
-        height="100%"
-      >
+      <v-card flat class="d-flex flex-column justify-center" height="100%">
         <v-card-title>
           <v-spacer />
-          <v-btn class="mt-1" text color="white" @click="onClose">
+          <v-btn class="mt-1" text @click="onClose">
             <v-icon v-text="icons.Close" />
           </v-btn>
         </v-card-title>
@@ -19,14 +15,15 @@
                 <v-textarea
                   outlined
                   name="input-7-4"
-                  label="Outlined textarea"
+                  label="Extract"
+                  disabled
                   :value="content"
                 ></v-textarea>
               </v-col>
             </v-row>
 
-            <v-row class="d-flex justify-center">
-              <v-col cols="12" md="5">
+            <v-row class="d-flex justify-center align-center">
+              <v-col cols="5">
                 <v-text-field
                   ref="label"
                   v-model="state.label"
@@ -34,7 +31,7 @@
                   label="label"
                   required
               /></v-col>
-              <v-col cols="12" md="5">
+              <v-col cols="5">
                 <v-autocomplete
                   v-model="state.entity"
                   :items="entities"
@@ -53,7 +50,7 @@
             </v-row>
           </v-form>
         </v-card-text>
-        <v-card-actions class="d-flex justify-end">
+        <v-card-actions class="d-flex pb-xs-4">
           <v-row class="d-flex justify-center">
             <v-col cols="10">
               <v-btn
@@ -94,7 +91,8 @@ export default class AnnotatePanel extends OpenCloseMixin {
   async onStateChange(state: { label: string; entity: Entity | null }) {
     const annotation: Annotation = plainToClass(Annotation, {
       ...state,
-      ...annotateModule.editedAnnotation
+      ...annotateModule.editedAnnotation,
+      value: this.content
     });
     const isValid = await annotation.isValid();
     if (isValid) {

@@ -21,5 +21,6 @@ export enum Icons {
   Delete = "mdi-delete",
   DotVertical = "mdi-dots-vertical",
   Badge = "mdi-badge-account",
-  Save = "mdi-content-save"
+  Save = "mdi-content-save",
+  Stamper = "mdi-stamper"
 }

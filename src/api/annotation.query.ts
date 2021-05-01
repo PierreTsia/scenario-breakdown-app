@@ -23,8 +23,8 @@ export const CREATE_ANNOTATION = gql`
 `;
 
 export const PROJECT_ANNOTATIONS = gql`
-  query($projectId: String!) {
-    projectAnnotations(projectId: $projectId) {
+  query($input: FetchAnnotationInput!) {
+    projectAnnotations(input: $input) {
       id
       label
       start {

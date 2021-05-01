@@ -2,13 +2,13 @@ import first from "lodash/first";
 import last from "lodash/last";
 import { Word } from "@/dtos/Word.dto";
 import { Expose, plainToClass } from "class-transformer";
-import { Coord, DraftAnnotation } from "@/dtos/Annotation.dto";
+import { Indices, DraftAnnotation } from "@/dtos/Annotation.dto";
 import { Chapter } from "@/dtos/Chapter.dto";
 import { User } from "@/dtos/User.dto";
 import { Factory } from "@/factories/factory.factory";
 
 type Boundary = "start" | `end`;
-type Boundaries = { [key in Boundary]: Coord };
+type Boundaries = { [key in Boundary]: Indices };
 
 export class DraftAnnotationFactory extends Factory<DraftAnnotation> {
   words: Word[] = [];
@@ -37,7 +37,7 @@ export class DraftAnnotationFactory extends Factory<DraftAnnotation> {
 
   @Expose()
   get fullText(): string {
-    return this.words.map(w => w.label).join(" ");
+    return this.words.map(w => w.value).join(" ");
   }
 
   get boundaries() {

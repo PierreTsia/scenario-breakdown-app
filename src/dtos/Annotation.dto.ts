@@ -11,17 +11,17 @@ import {
   IsMongoId
 } from "class-validator";
 
-export type Coord = { paragraphIndex: number; wordIndex: number };
+export type Indices = { paragraphIndex: number; wordIndex: number };
 export class DraftAnnotation {
   @Expose()
   @Type(() => Chapter)
   chapter!: Chapter;
 
   @Expose()
-  start!: Coord;
+  start!: Indices;
 
   @Expose()
-  end!: Coord;
+  end!: Indices;
 
   @Expose()
   @Type(() => User)
@@ -47,14 +47,16 @@ export class AnnotationInput {
 
   @Expose()
   @IsMongoId()
-  @Transform(({ value }) => value.id)
   projectId!: string;
 
   @Expose()
-  start!: Coord;
+  start!: Indices;
 
   @Expose()
-  end!: Coord;
+  end!: Indices;
+
+  @Expose()
+  value!: string;
 }
 
 export class Annotation extends DraftAnnotation {
@@ -64,6 +66,12 @@ export class Annotation extends DraftAnnotation {
   @Expose()
   @IsNotEmpty()
   label!: string;
+
+  @Expose()
+  projectId!: string;
+
+  @Expose()
+  chapterId!: string;
 
   @Expose()
   @IsObject()

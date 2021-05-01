@@ -34,6 +34,7 @@ export class AnnotateModule extends VuexModule {
   chapter: Chapter | null = null;
   paragraphs: Paragraph[] = [];
   wordsByParagraphs: Map<number, Word[]> = new Map();
+  paragraphsFullText: string[] = [];
   editedAnnotation: DraftAnnotation | Annotation | null = null;
   annotations: Annotation[] = [];
 
@@ -58,10 +59,10 @@ export class AnnotateModule extends VuexModule {
   }
 
   @Action
-  async fetchAnnotations(projectId: string) {
+  async fetchAnnotations(input: { projectId: string; chapterId?: string }) {
     const { data } = await apolloClient.query({
       query: PROJECT_ANNOTATIONS,
-      variables: { projectId }
+      variables: { input }
     });
     this.setAnnotations(
       data.projectAnnotations.map((a: never) =>
@@ -76,13 +77,14 @@ export class AnnotateModule extends VuexModule {
   setAnnotatedChapter({ chapter }: { chapter: Chapter | null }) {
     this.chapter = chapter;
   }
+
   @Mutation
-  setParagraphs(paragraphs: Paragraph[]) {
-    this.paragraphs = paragraphs;
+  setParagraphs({ paragraphs }: { paragraphs: Paragraph[] }) {
     this.wordsByParagraphs = paragraphs.reduce(
       mapWords,
-      this.wordsByParagraphs
+      new Map() as Map<number, Word[]>
     );
+    this.paragraphsFullText = paragraphs.flatMap(p => p.fullText);
   }
 
   @Mutation

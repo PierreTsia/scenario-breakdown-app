@@ -8,7 +8,7 @@
     <v-card v-if="chapter" class="annotate-modal">
       <v-toolbar dark color="primary">
         <v-btn icon dark @click="onClose">
-          <v-icon>mdi-close</v-icon>
+          <v-icon v-text="icons.Close" />
         </v-btn>
         <v-toolbar-title>{{ chapter.title }}</v-toolbar-title>
         <v-spacer></v-spacer>
@@ -35,19 +35,22 @@
             dark
             fab
           >
-            <v-icon v-if="isTagBtnShown" class="tagBtn">
-              mdi-close
-            </v-icon>
-            <v-icon v-else class="tagBtn">
-              mdi-pencil
-            </v-icon>
+            <v-icon v-if="isTagBtnShown" class="tagBtn" v-text="icons.Close" />
+            <v-icon v-else class="tagBtn" v-text="icons.Pen" />
           </v-btn>
         </template>
-        <v-btn fab dark small color="green" class="tagBtn">
-          <v-icon class="tagBtn">mdi-stamper </v-icon>
+        <v-btn
+          fab
+          dark
+          small
+          color="green"
+          class="tagBtn"
+          @click="openAnnotationPanel"
+        >
+          <v-icon class="tagBtn" v-text="icons.Stamper" />
         </v-btn>
         <v-btn fab dark small color="red" class="tagBtn">
-          <v-icon class="tagBtn">mdi-delete</v-icon>
+          <v-icon class="tagBtn" v-text="icons.Delete" />
         </v-btn>
       </v-speed-dial>
 
@@ -66,17 +69,20 @@
         <v-subheader>Settings</v-subheader>
         <v-list-item class="justify-center">
           <v-list-item-content>
-            <v-list-item-title
-              >Paragraphs per page :
-              <v-select
-                v-model="numberOfParagraphsPerPage"
-                :items="[1, 3, 5, 10, 20, 50, 100]"
-              />
+            <v-list-item-title>
+              <v-row class="d-flex align-center">
+                <v-col cols="2"
+                  ><span class="text-subtitle-1"
+                    >Paragraphs per page :</span
+                  ></v-col
+                >
+                <v-col cols="2" offset="1"
+                  ><v-select
+                    v-model="numberOfParagraphsPerPage"
+                    :items="[1, 3, 5, 10, 20, 50, 100]"
+                /></v-col>
+              </v-row>
             </v-list-item-title>
-
-            <v-list-item-subtitle>
-              {{ totalPages }}
-            </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <v-list-item class="justify-center" ref="viewer">
@@ -89,6 +95,7 @@
         <v-list-item v-if="activeParagraphsWords" class="list">
           <paragraph-viewer
             :paragraphs="activeParagraphsWords"
+            :full-text="activeParagraphsFullText"
             @on-boundaries-change="handleSelectedDebounced"
           />
         </v-list-item>
@@ -110,6 +117,7 @@ import debounce from "lodash/debounce";
 import { Chapter } from "@/dtos/Chapter.dto";
 import { User } from "@/dtos/User.dto";
 import { DraftAnnotationFactory } from "@/factories/draft-annotation.factory";
+import { chaptersModule } from "@/store/modules/chapters";
 
 @Component({ components: { ParagraphViewer } })
 export default class AnnotateModal extends OpenCloseMixin {
@@ -125,7 +133,22 @@ export default class AnnotateModal extends OpenCloseMixin {
   @Watch("isShown")
   async onVisible(isShown: boolean) {
     if (isShown) {
-      await annotateModule.fetchAnnotations(this.$route.params.projectId);
+      const { projectId } = this.$route.params;
+      await annotateModule.fetchAnnotations({
+        projectId,
+        chapterId: annotateModule.chapter?.id
+      });
+    }
+  }
+
+  @Watch("activeIndices")
+  async onPageChange(indices: number[]) {
+    if (indices.some(i => !annotateModule.wordsByParagraphs.has(i))) {
+      await chaptersModule.getChapterParagraphs({
+        chapterId: annotateModule?.chapter?.id as string,
+        start: indices[0],
+        limit: 50
+      });
     }
   }
 
@@ -146,22 +169,27 @@ export default class AnnotateModal extends OpenCloseMixin {
     );
   }
 
+  get activeParagraphsFullText(): string[] {
+    return this.activeIndices.map(
+      i => annotateModule.paragraphsFullText[i] ?? ""
+    );
+  }
+
   get totalPages() {
     return Math.ceil(this.counts.total / this.numberOfParagraphsPerPage);
   }
 
   get activeIndices() {
-    return range(
-      this.paginationIndex,
-      this.paginationIndex + this.numberOfParagraphsPerPage
-    );
+    const start = (this.paginationIndex - 1) * this.numberOfParagraphsPerPage;
+    const end = start + this.numberOfParagraphsPerPage;
+    return range(start, end);
   }
 
   onSelectedText({
     coords,
     draftAnnotation
   }: {
-    coords: Coords;
+    coords: { top: number; left: number };
     draftAnnotation: Word[];
   }) {
     if (coords) {
@@ -186,6 +214,7 @@ export default class AnnotateModal extends OpenCloseMixin {
         this.chapter as Chapter,
         this.me as User
       );
+      console.log(factory.create());
       annotateModule.setDraftAnnotation(factory.create());
     }
   }
