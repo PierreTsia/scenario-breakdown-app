@@ -1,27 +1,19 @@
-import { Expose, Transform, Type } from "class-transformer";
+import { Expose, Type } from "class-transformer";
 import { Chapter } from "@/dtos/Chapter.dto";
-import { Entity } from "@/dtos/Entity.dto";
 import { User } from "@/dtos/User.dto";
-import {
-  IsNotEmpty,
-  validate,
-  ValidationError,
-  IsObject,
-  IsNotEmptyObject,
-  IsMongoId
-} from "class-validator";
+import { Attribute } from "@/dtos/Attribute.dto";
+import { Coord } from "@/dtos/CreateAnnotationInput.dto";
 
-export type Indices = { paragraphIndex: number; wordIndex: number };
 export class DraftAnnotation {
   @Expose()
   @Type(() => Chapter)
   chapter!: Chapter;
 
   @Expose()
-  start!: Indices;
+  start!: Coord;
 
   @Expose()
-  end!: Indices;
+  end!: Coord;
 
   @Expose()
   @Type(() => User)
@@ -30,66 +22,27 @@ export class DraftAnnotation {
   @Expose()
   fullText?: string;
 }
-export class AnnotationInput {
+export class Annotation {
   @Expose()
-  @IsNotEmpty()
-  label!: string;
-
+  id!: string;
   @Expose()
-  @IsMongoId()
-  @Transform(({ value }) => value.id)
-  entity!: string;
-
-  @Expose({ name: "chapter" })
-  @IsMongoId()
-  @Transform(({ value }) => value.id)
   chapterId!: string;
-
   @Expose()
-  @IsMongoId()
   projectId!: string;
-
-  @Expose()
-  start!: Indices;
-
-  @Expose()
-  end!: Indices;
-
   @Expose()
   value!: string;
-}
-
-export class Annotation extends DraftAnnotation {
   @Expose()
-  id?: string;
-
+  @Type(() => Coord)
+  start!: Coord;
   @Expose()
-  @IsNotEmpty()
-  label!: string;
-
+  @Type(() => Coord)
+  end!: Coord;
   @Expose()
-  projectId!: string;
-
+  @Type(() => Attribute)
+  attribute!: Attribute;
   @Expose()
-  chapterId!: string;
-
+  @Type(() => User)
+  createdBy!: User;
   @Expose()
-  @IsObject()
-  @IsNotEmptyObject()
-  @Type(() => Entity)
-  entity!: Entity;
-
-  @Expose()
-  creationDate?: Date;
-
-  @Expose()
-  async errors(): Promise<ValidationError[]> {
-    return await validate(this);
-  }
-
-  @Expose()
-  async isValid() {
-    const errors = await this.errors();
-    return !errors?.length;
-  }
+  creationDate!: Date;
 }

@@ -23,6 +23,11 @@ export const CREATE_ANNOTATION = gql`
       }
       value
       creationDate
+      createdBy {
+        email
+        id
+        username
+      }
     }
   }
 `;
@@ -35,6 +40,11 @@ export const PROJECT_ANNOTATIONS = gql`
       attribute {
         id
         slug
+        entity {
+          id
+          label
+          color
+        }
       }
       chapterId
       projectId
@@ -49,7 +59,9 @@ export const PROJECT_ANNOTATIONS = gql`
       createdBy {
         email
         id
+        username
       }
+      creationDate
     }
   }
 `;

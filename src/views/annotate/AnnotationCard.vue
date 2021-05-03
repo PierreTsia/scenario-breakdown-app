@@ -5,10 +5,10 @@
         <v-list-item class="px-0">
           <v-list-item-content>
             <v-list-item-title class="text-h6 align-center d-flex">
-              <v-chip :color="annotation.entity.color" class="mr-2">
-                {{ annotation.entity.label }}
+              <v-chip :color="annotation.attribute.entity.color" class="mr-2">
+                {{ annotation.attribute.entity.label }}
               </v-chip>
-              {{ annotation.label }}
+              {{ annotation.attribute.slug }}
             </v-list-item-title>
             <v-list-item-subtitle class="mt-2">
               Created by

@@ -4,11 +4,7 @@ import { Chapter } from "@/dtos/Chapter.dto";
 import { Paragraph } from "@/dtos/Paragraph.dto";
 import { plainToClass } from "class-transformer";
 import { Word } from "@/dtos/Word.dto";
-import {
-  Annotation,
-  AnnotationInput,
-  DraftAnnotation
-} from "@/dtos/Annotation.dto";
+import { Annotation, DraftAnnotation } from "@/dtos/Annotation.dto";
 import apolloClient from "@/api/apollo.client";
 import {
   CREATE_ANNOTATION,
@@ -51,7 +47,7 @@ export class AnnotateModule extends VuexModule {
   }
 
   @Action
-  async createAnnotation(input: AnnotationInput) {
+  async createAnnotation(input: Annotation) {
     const { data } = await apolloClient.mutate({
       mutation: CREATE_ANNOTATION,
       variables: { input }
@@ -68,8 +64,9 @@ export class AnnotateModule extends VuexModule {
       mutation: DELETE_ANNOTATIONS,
       variables: { deleteInput: { annotationIds } }
     });
-    /* TODO */
-    console.log(data);
+    if (data?.deleteAnnotations) {
+      this.removeAnnotations({ annotationIds });
+    }
   }
 
   @Action
@@ -90,6 +87,12 @@ export class AnnotateModule extends VuexModule {
   @Mutation
   setAnnotatedChapter({ chapter }: { chapter: Chapter | null }) {
     this.chapter = chapter;
+  }
+  @Mutation
+  removeAnnotations({ annotationIds }: { annotationIds: string[] }) {
+    this.annotations = this.annotations.filter(
+      a => !annotationIds.includes(a.id)
+    );
   }
 
   @Mutation

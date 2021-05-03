@@ -214,7 +214,6 @@ export default class AnnotateModal extends OpenCloseMixin {
         this.chapter as Chapter,
         this.me as User
       );
-      console.log(factory.create());
       annotateModule.setDraftAnnotation(factory.create());
     }
   }

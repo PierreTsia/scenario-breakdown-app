@@ -123,7 +123,7 @@ export default class ParagraphViewer extends Vue {
 
   wordAnnotationColor(word: Word): string {
     const annotation = this.wordAnnotation(word);
-    return `${annotation?.entity?.color}66`;
+    return `${annotation?.attribute?.entity?.color}66`;
   }
 
   wordMargin(word: Word): string {
@@ -228,6 +228,7 @@ export default class ParagraphViewer extends Vue {
 
   async handleDelete(annotationIds: string[]) {
     await annotateModule.deleteAnnotation({ annotationIds });
+    this.showMenu = false;
   }
 
   getCoords([first, last]: string[]): number[][] {
