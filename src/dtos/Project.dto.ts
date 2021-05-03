@@ -1,11 +1,6 @@
 import { Expose, Transform, TransformFnParams, Type } from "class-transformer";
 import { Chapter } from "@/dtos/Chapter.dto";
 import { User } from "@/dtos/User.dto";
-import format from "date-fns/format";
-import { parseISO } from "date-fns";
-
-const transformDate = ({ obj }: TransformFnParams): string =>
-  format(parseISO(obj.creationDate), "dd MMMM yyyy");
 
 export enum Status {
   Uploaded = "UPLOADED",
@@ -35,11 +30,7 @@ export class Project {
   createdBy?: User;
 
   @Expose()
-  @Type(() => Date)
-  @Transform(transformDate, {
-    toClassOnly: true
-  })
-  creationDate?: string;
+  creationDate?: Date;
 
   get chaptersCount() {
     return this.chapters.length;

@@ -1,4 +1,5 @@
 import { LOG_IN, SIGN_UP, ME } from "@/api/auth.query";
+import { PROJECT_ATTRIBUTES } from "@/api/attributes.query";
 import {
   USER_PROJECTS,
   CREATE_PROJECT,
@@ -6,7 +7,11 @@ import {
   PROJECT_BY_ID
 } from "@/api/projects.query";
 import { DELETE_CHAPTER, CHAPTER_PARAGRAPHS } from "@/api/chapters.query";
-import { CREATE_ANNOTATION, PROJECT_ANNOTATIONS } from "@/api/annotation.query";
+import {
+  CREATE_ANNOTATION,
+  PROJECT_ANNOTATIONS,
+  DELETE_ANNOTATIONS
+} from "@/api/annotation.query";
 import {
   CREATE_ENTITY,
   PROJECT_ENTITIES,
@@ -27,5 +32,7 @@ export {
   PROJECT_ENTITIES,
   ALL_ENTITIES,
   CREATE_ANNOTATION,
-  PROJECT_ANNOTATIONS
+  PROJECT_ANNOTATIONS,
+  DELETE_ANNOTATIONS,
+  PROJECT_ATTRIBUTES
 };

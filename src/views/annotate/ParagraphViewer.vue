@@ -1,12 +1,7 @@
 <template>
-  <v-container
-    :class="isDarkMode ? ['grey', 'darken-4'] : ['grey', 'lighten-4']"
-    class="py-12 px-0 px-sm-12"
-  >
+  <v-container :class="themeClasses" class="py-12 px-0 px-sm-12">
     <v-card flat tile>
-      <v-list
-        :class="isDarkMode ? ['grey', 'darken-4'] : ['grey', 'lighten-4']"
-      >
+      <v-list :class="themeClasses">
         <v-list-item class="justify-center r">
           <v-row
             class="d-inline-flex justify-start relative"
@@ -16,15 +11,14 @@
               v-model="showMenu"
               absolute
               offset-y
+              transition="scale-transition"
               :position-y="menuPosition.y"
               :position-x="menuPosition.x"
-              transition="scale-transition"
             >
-              <v-list>
-                <v-list-item v-for="(item, index) in items" :key="index">
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
-                </v-list-item>
-              </v-list>
+              <annotation-card
+                :annotation="selectedAnnotation"
+                @on-delete-click="handleDelete"
+              />
             </v-menu>
             <drag-select
               class="word--container d-inline-flex"
@@ -34,12 +28,12 @@
               <div
                 v-for="item in words"
                 :ref="`item-${item.uniqId}`"
-                @click="e => handleClick(item, e)"
                 :key="item.uniqId"
                 :dragSelectAttr="item.uniqId"
                 :style="wordStyles(item)"
                 :class="wordClasses(item)"
                 class="word"
+                @click="e => handleClick(item, e)"
               >
                 <span>
                   {{ item.value }}
@@ -63,10 +57,10 @@ import { annotateModule } from "@/store/modules/annotate";
 import { appModule } from "@/store/modules/app";
 import { Annotation } from "@/dtos/Annotation.dto";
 import { Punct, PunctuationHelper } from "@/helpers/punctuation.helper";
-
+import AnnotationCard from "@/views/annotate/AnnotationCard.vue";
 const TAG_BTN = "tagBtn";
 
-@Component({ components: { DragSelect } })
+@Component({ components: { DragSelect, AnnotationCard } })
 export default class ParagraphViewer extends Vue {
   @Prop({ default: [] })
   paragraphs!: Word[][];
@@ -78,6 +72,7 @@ export default class ParagraphViewer extends Vue {
   items = [{ title: "bonjour hugo" }, { title: "Click Me" }];
   showMenu = false;
   menuPosition = { x: 500, y: 500 };
+  selectedAnnotation: Annotation | null = null;
 
   @Emit()
   @Watch("dragSelectBoundaries")
@@ -112,15 +107,23 @@ export default class ParagraphViewer extends Vue {
     return this.paragraphs.flat();
   }
 
+  get themeClasses() {
+    return this.isDarkMode ? ["grey", "darken-4"] : ["grey", "lighten-4"];
+  }
+
   isAPunctuation(word: Word) {
-    return word.tag === "punctuation" || ["»", " «"].includes(word.value);
+    return word.tag === "punctuation" || ["»", "«"].includes(word.value);
+  }
+
+  wordAnnotation(word: Word): Annotation | undefined {
+    return this.annotations.find(a =>
+      this.isInRange(word, this.getBoundaries(a))
+    );
   }
 
   wordAnnotationColor(word: Word): string {
-    const annotation = this.annotations.find(a => {
-      return this.isInRange(word, this.getBoundaries(a));
-    });
-    return `${annotation?.entity?.color}66` || "red";
+    const annotation = this.wordAnnotation(word);
+    return `${annotation?.entity?.color}66`;
   }
 
   wordMargin(word: Word): string {
@@ -147,24 +150,12 @@ export default class ParagraphViewer extends Vue {
     };
   }
 
-  isLastWordOfParagraph(word: Word): boolean {
-    const par = this.paragraphs.find(
-      words => words[0]?.paragraphId === word.paragraphId
-    );
-    const following = par?.[word.wordIndex + 1];
-    return !following;
-  }
-
   wordClasses(word: Word) {
     let classes: string[] = [];
     if (this.isDragSelected(word)) {
       classes = ["accent--text", "font-weight-bold"];
     }
-    const color = this.isDarkMode ? "white" : "black";
-    classes.push(`${color}--text`);
-    if (this.isLastWordOfParagraph(word)) {
-      classes.push("--isLastWord");
-    }
+    classes.push(`${this.isDarkMode ? "white" : "black"}--text`);
     return classes;
   }
 
@@ -224,12 +215,19 @@ export default class ParagraphViewer extends Vue {
 
   handleClick(item: Word, event: any) {
     if (this.isAnnotated(item)) {
-      console.log(event);
       this.menuPosition = { x: event.clientX, y: event.clientY };
       this.dragSelectBoundaries = [];
+      const annotation = this.wordAnnotation(item);
+      if (annotation) {
+        this.selectedAnnotation = annotation;
+      }
       return (this.showMenu = !this.showMenu);
     }
     this.dragSelectBoundaries = [item.uniqId, item.uniqId];
+  }
+
+  async handleDelete(annotationIds: string[]) {
+    await annotateModule.deleteAnnotation({ annotationIds });
   }
 
   getCoords([first, last]: string[]): number[][] {

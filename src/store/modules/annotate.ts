@@ -10,7 +10,11 @@ import {
   DraftAnnotation
 } from "@/dtos/Annotation.dto";
 import apolloClient from "@/api/apollo.client";
-import { CREATE_ANNOTATION, PROJECT_ANNOTATIONS } from "@/api/index.queries";
+import {
+  CREATE_ANNOTATION,
+  DELETE_ANNOTATIONS,
+  PROJECT_ANNOTATIONS
+} from "@/api/index.queries";
 
 const mapWords = (
   acc: Map<number, Word[]>,
@@ -56,6 +60,16 @@ export class AnnotateModule extends VuexModule {
       excludeExtraneousValues: true
     });
     this.addAnnotation(newAnnotation);
+  }
+
+  @Action
+  async deleteAnnotation({ annotationIds }: { annotationIds: string[] }) {
+    const { data } = await apolloClient.mutate({
+      mutation: DELETE_ANNOTATIONS,
+      variables: { deleteInput: { annotationIds } }
+    });
+    /* TODO */
+    console.log(data);
   }
 
   @Action

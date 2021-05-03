@@ -24,16 +24,33 @@
 
             <v-row class="d-flex justify-center align-center">
               <v-col cols="5">
-                <v-text-field
-                  ref="label"
-                  v-model="state.label"
-                  prepend-icon="mdi-badge-account"
-                  label="label"
-                  required
-              /></v-col>
+                <v-combobox
+                  v-model="state.attribute"
+                  :items="attributes"
+                  hide-selected
+                  :search-input.sync="search"
+                  hint="...or type and press enter to create a new one"
+                  label="Select attribute"
+                  item-text="slug"
+                  persistent-hint
+                  small-chips
+                >
+                  <template v-slot:no-data>
+                    <v-list-item>
+                      <v-list-item-content>
+                        <v-list-item-title>
+                          No results matching "<strong>{{ search }}</strong
+                          >". Press <kbd>enter</kbd> to create a new one
+                        </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </template>
+                </v-combobox>
+              </v-col>
               <v-col cols="5">
                 <v-autocomplete
                   v-model="state.entity"
+                  :disabled="isExistingAttribute"
                   :items="entities"
                   item-text="label"
                   return-object
@@ -56,7 +73,7 @@
               <v-btn
                 class="mt-6"
                 color="success"
-                :disabled="!!errors.length"
+                :disabled="!state.entity || !state.attribute"
                 @click="createAnnotation"
                 x-large
               >
@@ -76,47 +93,61 @@ import { Icons } from "@/components/core/icons/icons-names.enum";
 import OpenCloseMixin from "@/components/mixins/OpenClose.mixin";
 import { annotateModule } from "@/store/modules/annotate";
 import { entitiesModule } from "@/store/modules/entities";
+import { attributesModule } from "@/store/modules/attributes";
 import { Entity } from "@/dtos/Entity.dto";
 import { plainToClass } from "class-transformer";
-import { Annotation, AnnotationInput } from "@/dtos/Annotation.dto";
+import { CreateAnnotationInput } from "@/dtos/CreateAnnotationInput.dto";
 import { ValidationError } from "class-validator";
+import { Attribute } from "@/dtos/Attribute.dto";
 
 @Component
 export default class AnnotatePanel extends OpenCloseMixin {
   icons = Icons;
-  state: { label: string; entity: Entity | null } = { label: "", entity: null };
+  state: { entity: Entity | null; attribute: Attribute | null } = {
+    entity: null,
+    attribute: null
+  };
   errors: ValidationError[] = [];
-  annotation: Annotation | null = null;
+  search = null;
   @Watch("state", { deep: true })
-  async onStateChange(state: { label: string; entity: Entity | null }) {
-    const annotation: Annotation = plainToClass(Annotation, {
-      ...state,
-      ...annotateModule.editedAnnotation,
-      value: this.content
-    });
-    const isValid = await annotation.isValid();
-    if (isValid) {
-      this.annotation = annotation;
-      this.errors = [];
-    } else {
-      this.errors = await annotation.errors();
+  async onStateChange({ attribute }: { attribute: Attribute | null }) {
+    if (attribute?.id) {
+      this.state.entity = attribute.entity;
+      this.$forceUpdate();
     }
   }
   async mounted() {
     await entitiesModule.fetchEntities();
+    await attributesModule.fetchAttribute(this.$route.params.projectId);
   }
 
   async createAnnotation() {
-    const input = plainToClass(
-      AnnotationInput,
-      { ...this.annotation, projectId: this.$route.params.projectId },
-      {
-        excludeExtraneousValues: true
-      }
-    );
-    console.log(input);
-    await annotateModule.createAnnotation(input);
-    this.onClose();
+    const { start, end, fullText } = annotateModule.editedAnnotation;
+
+    const input = {
+      chapterId: this.$route.params.chapterId,
+      projectId: this.$route.params.projectId,
+      value: fullText,
+      start,
+      end,
+      entityId: this.state.entity?.id
+    };
+    if (this.state.attribute?.id) {
+      input.attributeId = this.state.attribute.id;
+    } else {
+      input.slug = this.state.attribute;
+    }
+
+    const annotationInput = plainToClass(CreateAnnotationInput, input);
+    console.log(annotationInput);
+    const isValid = await annotationInput.isValid();
+    const errors = await annotationInput.errors();
+    if (!isValid) {
+      this.errors = errors;
+    } else {
+      await annotateModule.createAnnotation(annotationInput);
+      this.onClose();
+    }
   }
 
   get content(): string {
@@ -125,6 +156,14 @@ export default class AnnotatePanel extends OpenCloseMixin {
 
   get entities(): Entity[] {
     return entitiesModule.entities;
+  }
+
+  get attributes(): Attribute[] {
+    return attributesModule.attributes;
+  }
+
+  get isExistingAttribute(): boolean {
+    return !!this.state.attribute?.id;
   }
 }
 </script>

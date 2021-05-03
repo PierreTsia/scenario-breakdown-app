@@ -80,7 +80,7 @@ export class Annotation extends DraftAnnotation {
   entity!: Entity;
 
   @Expose()
-  creationDate?: string;
+  creationDate?: Date;
 
   @Expose()
   async errors(): Promise<ValidationError[]> {

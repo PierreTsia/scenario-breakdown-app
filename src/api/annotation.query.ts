@@ -12,12 +12,17 @@ export const CREATE_ANNOTATION = gql`
         paragraphIndex
         wordIndex
       }
-      entity {
+      attribute {
         id
-        color
-        label
+        slug
+        entity {
+          id
+          color
+          label
+        }
       }
-      label
+      value
+      creationDate
     }
   }
 `;
@@ -26,21 +31,31 @@ export const PROJECT_ANNOTATIONS = gql`
   query($input: FetchAnnotationInput!) {
     projectAnnotations(input: $input) {
       id
-      label
+      value
+      attribute {
+        id
+        slug
+      }
+      chapterId
+      projectId
       start {
-        paragraphIndex
         wordIndex
+        paragraphIndex
       }
       end {
-        paragraphIndex
         wordIndex
+        paragraphIndex
       }
-      entity {
-        label
+      createdBy {
+        email
         id
-        color
       }
-      creationDate
     }
+  }
+`;
+
+export const DELETE_ANNOTATIONS = gql`
+  mutation($deleteInput: DeleteAnnotationInput!) {
+    deleteAnnotations(deleteInput: $deleteInput)
   }
 `;

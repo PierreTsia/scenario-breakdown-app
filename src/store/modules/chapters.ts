@@ -90,10 +90,7 @@ export class ChaptersModule extends VuexModule {
       plainToClass(Paragraph, p, { excludeExtraneousValues: true })
     );
     this.paginationModule.setPaginationMeta(paginationMeta);
-    this.annotateModule.setParagraphs({
-      paragraphs,
-      chapterId: chapterParagraphsInput.chapterId
-    });
+    this.annotateModule.setParagraphs({ paragraphs });
   }
 
   @Action
