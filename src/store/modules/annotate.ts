@@ -11,6 +11,8 @@ import {
   DELETE_ANNOTATIONS,
   PROJECT_ANNOTATIONS
 } from "@/api/index.queries";
+import { CreateEntityInput } from "@/dtos/Entity.dto";
+import { CreateAnnotationInput } from "@/dtos/CreateAnnotationInput.dto";
 
 const mapWords = (
   acc: Map<number, Word[]>,
@@ -35,7 +37,7 @@ export class AnnotateModule extends VuexModule {
   paragraphs: Paragraph[] = [];
   wordsByParagraphs: Map<number, Word[]> = new Map();
   paragraphsFullText: string[] = [];
-  editedAnnotation: DraftAnnotation | Annotation | null = null;
+  editedAnnotation: DraftAnnotation | null = null;
   annotations: Annotation[] = [];
 
   get isAnnotating(): boolean {
@@ -47,7 +49,7 @@ export class AnnotateModule extends VuexModule {
   }
 
   @Action
-  async createAnnotation(input: Annotation) {
+  async createAnnotation(input: CreateAnnotationInput) {
     const { data } = await apolloClient.mutate({
       mutation: CREATE_ANNOTATION,
       variables: { input }

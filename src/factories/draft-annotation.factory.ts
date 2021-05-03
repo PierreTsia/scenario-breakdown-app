@@ -2,13 +2,14 @@ import first from "lodash/first";
 import last from "lodash/last";
 import { Word } from "@/dtos/Word.dto";
 import { Expose, plainToClass } from "class-transformer";
-import { Indices, DraftAnnotation } from "@/dtos/Annotation.dto";
+import { DraftAnnotation } from "@/dtos/Annotation.dto";
 import { Chapter } from "@/dtos/Chapter.dto";
 import { User } from "@/dtos/User.dto";
 import { Factory } from "@/factories/factory.factory";
+import { Coord } from "@/dtos/CreateAnnotationInput.dto";
 
 type Boundary = "start" | `end`;
-type Boundaries = { [key in Boundary]: Indices };
+type Boundaries = { [key in Boundary]: Coord };
 
 export class DraftAnnotationFactory extends Factory<DraftAnnotation> {
   words: Word[] = [];

@@ -3,7 +3,17 @@ import { Chapter } from "@/dtos/Chapter.dto";
 import { User } from "@/dtos/User.dto";
 import { Attribute } from "@/dtos/Attribute.dto";
 import { Coord } from "@/dtos/CreateAnnotationInput.dto";
-
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+export interface IAnnotation {
+  chapterId: string;
+  projectId: string;
+  value: string;
+  start: Coord;
+  end: Coord;
+  entityId: string;
+  attributeId?: string;
+  slug?: string;
+}
 export class DraftAnnotation {
   @Expose()
   @Type(() => Chapter)

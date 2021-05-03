@@ -99,6 +99,7 @@ import { plainToClass } from "class-transformer";
 import { CreateAnnotationInput } from "@/dtos/CreateAnnotationInput.dto";
 import { ValidationError } from "class-validator";
 import { Attribute } from "@/dtos/Attribute.dto";
+import { IAnnotation } from "@/dtos/Annotation.dto";
 
 @Component
 export default class AnnotatePanel extends OpenCloseMixin {
@@ -122,24 +123,24 @@ export default class AnnotatePanel extends OpenCloseMixin {
   }
 
   async createAnnotation() {
+    if (!annotateModule.editedAnnotation) return;
     const { start, end, fullText } = annotateModule.editedAnnotation;
 
     const input = {
       chapterId: this.$route.params.chapterId,
       projectId: this.$route.params.projectId,
-      value: fullText,
+      value: fullText as string,
       start,
       end,
-      entityId: this.state.entity?.id
-    };
+      entityId: this.state.entity?.id as string
+    } as any;
     if (this.state.attribute?.id) {
       input.attributeId = this.state.attribute.id;
     } else {
-      input.slug = this.state.attribute;
+      input.slug = this.state.attribute as any;
     }
 
     const annotationInput = plainToClass(CreateAnnotationInput, input);
-    console.log(annotationInput);
     const isValid = await annotationInput.isValid();
     const errors = await annotationInput.errors();
     if (!isValid) {
