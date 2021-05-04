@@ -11,7 +11,7 @@ export class AttributesModule extends VuexModule {
   attributes: Attribute[] = [];
 
   @Action
-  async fetchAttribute(projectId: string) {
+  async fetchAttributes(projectId: string) {
     const query = {
       query: PROJECT_ATTRIBUTES,
       variables: { projectId }

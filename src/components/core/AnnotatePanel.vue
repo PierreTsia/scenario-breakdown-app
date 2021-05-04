@@ -117,10 +117,6 @@ export default class AnnotatePanel extends OpenCloseMixin {
       this.$forceUpdate();
     }
   }
-  async mounted() {
-    await entitiesModule.fetchEntities();
-    await attributesModule.fetchAttribute(this.$route.params.projectId);
-  }
 
   async createAnnotation() {
     if (!annotateModule.editedAnnotation) return;

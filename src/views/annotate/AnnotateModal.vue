@@ -5,7 +5,7 @@
     hide-overlay
     transition="dialog-bottom-transition"
   >
-    <v-card v-if="chapter" class="annotate-modal">
+    <v-card v-if="chapter" class="annotate-modal fill-height">
       <v-toolbar dark color="primary">
         <v-btn icon dark @click="onClose">
           <v-icon v-text="icons.Close" />
@@ -53,8 +53,79 @@
           <v-icon class="tagBtn" v-text="icons.Delete" />
         </v-btn>
       </v-speed-dial>
+      <v-list>
+        <v-list-item>
+          <v-list-item-content class="px-4 container">
+            <v-row max-width="800">
+              <v-col cols="6">
+                <v-list-item-title>Settings</v-list-item-title>
+                <v-list-item-subtitle class="d-flex align-center justify-start">
+                  <span class="mr-4">Paragraphs per page :</span>
+                  <v-select
+                    v-model="numberOfParagraphsPerPage"
+                    class="select"
+                    :items="[1, 3, 5, 10, 20, 50, 100]"
+                  />
+                </v-list-item-subtitle>
 
-      <v-list three-line subheader>
+                <v-list-item-subtitle
+                  >Page {{ paginationIndex }} /{{ totalPages }}
+                </v-list-item-subtitle>
+              </v-col>
+              <v-col cols="6">
+                <v-list-item-title>Dataset</v-list-item-title>
+                <v-list-item-content>
+                  <v-list-item-subtitle
+                    >Attributes({{ attributes.length }})</v-list-item-subtitle
+                  >
+                  <v-chip-group active-class="primary--text" column>
+                    <v-chip
+                      v-for="attribute in attributes"
+                      :key="attribute.id"
+                      :color="attribute.entity.color"
+                    >
+                      {{ attribute.slug }}
+                    </v-chip>
+                  </v-chip-group>
+                  <v-divider></v-divider>
+                  <v-list-item-subtitle class="mt-2"
+                    >Entities({{ entities.length }})</v-list-item-subtitle
+                  >
+                  <v-chip-group active-class="primary--text" column>
+                    <v-chip
+                      v-for="entity in entities"
+                      :key="entity.id"
+                      :color="entity.color"
+                    >
+                      {{ entity.label }}
+                    </v-chip>
+                  </v-chip-group>
+                </v-list-item-content>
+              </v-col>
+            </v-row>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item class="justify-center" ref="viewer">
+          <v-list-item-content>
+            <v-pagination
+              v-model="paginationIndex"
+              :length="totalPages"
+              :total-visible="7"
+            />
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content>
+            <paragraph-viewer
+              :paragraphs="activeParagraphsWords"
+              :full-text="activeParagraphsFullText"
+              @on-boundaries-change="handleSelectedDebounced"
+            />
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+
+      <!--      <v-list three-line subheader>
         <v-list-item>
           <v-list-item-content>
             <v-list-item-title>Content summary</v-list-item-title>
@@ -99,7 +170,7 @@
             @on-boundaries-change="handleSelectedDebounced"
           />
         </v-list-item>
-      </v-list>
+      </v-list>-->
     </v-card>
   </v-dialog>
 </template>
@@ -108,6 +179,8 @@ import { Component, Watch } from "vue-property-decorator";
 import ParagraphViewer from "@/views/annotate/ParagraphViewer.vue";
 import OpenCloseMixin from "@/components/mixins/OpenClose.mixin";
 import { annotateModule } from "@/store/modules/annotate";
+import { attributesModule } from "@/store/modules/attributes";
+import { entitiesModule } from "@/store/modules/entities";
 import { paginationModule } from "@/store/modules/pagination";
 import { authModule } from "@/store/modules/auth";
 import { Icons } from "@/components/core/icons/icons-names.enum";
@@ -127,6 +200,7 @@ export default class AnnotateModal extends OpenCloseMixin {
   coords = { top: "500px", left: "20px" };
   draft: Word[] = [];
   isTagBtnShown = false;
+  tags = ["Work", "Home Improvement", "Vacation"];
 
   handleSelectedDebounced = debounce(this.onSelectedText, 300);
 
@@ -185,6 +259,13 @@ export default class AnnotateModal extends OpenCloseMixin {
     return range(start, end);
   }
 
+  get attributes() {
+    return attributesModule.attributes;
+  }
+  get entities() {
+    return entitiesModule.entities;
+  }
+
   onSelectedText({
     coords,
     draftAnnotation
@@ -225,4 +306,8 @@ export default class AnnotateModal extends OpenCloseMixin {
   #floatingBtn
     position absolute !important
     z-index 100 !important
+  .select
+    max-width 80px
+    margin-top 0
+    padding-top 0
 </style>

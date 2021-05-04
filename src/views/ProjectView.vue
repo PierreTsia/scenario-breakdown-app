@@ -62,6 +62,8 @@ import ProjectEntities from "@/components/project/ProjectEntities.vue";
 import ProjectAnnotations from "@/components/project/ProjectAnnotations.vue";
 import ProjectSearch from "@/components/project/ProjectSearch.vue";
 import ProjectOverview from "@/components/project/ProjectOverview.vue";
+import { entitiesModule } from "@/store/modules/entities";
+import { attributesModule } from "@/store/modules/attributes";
 enum Tabs {
   Overview = "overview",
   Search = "search",
@@ -98,6 +100,8 @@ export default class ProjectView extends Vue {
       projectId: this.$route.params.projectId,
       includeParagraphs: false
     });
+    await entitiesModule.fetchEntities();
+    await attributesModule.fetchAttributes(this.$route.params.projectId);
   }
 
   async mounted() {
