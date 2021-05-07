@@ -15,8 +15,16 @@
               :position-y="menuPosition.y"
               :position-x="menuPosition.x"
             >
-              <annotation-card
+              <!--              <annotation-card
                 :annotation="selectedAnnotation"
+                @on-delete-click="handleDelete"
+              />-->
+              <attribute-card
+                :attribute="selectedAttribute"
+                :created-by="attributeCreatedBy"
+                :annotation-id="
+                  selectedAnnotation ? selectedAnnotation.id : null
+                "
                 @on-delete-click="handleDelete"
               />
             </v-menu>
@@ -58,9 +66,15 @@ import { appModule } from "@/store/modules/app";
 import { Annotation } from "@/dtos/Annotation.dto";
 import { Punct, PunctuationHelper } from "@/helpers/punctuation.helper";
 import AnnotationCard from "@/views/annotate/AnnotationCard.vue";
+import AttributeCard from "@/views/annotate/AttributeCard.vue";
+import { Entity } from "@/dtos/Entity.dto";
+import { entitiesModule } from "@/store/modules/entities";
+import { attributesModule } from "@/store/modules/attributes";
+import { Attribute } from "@/dtos/Attribute.dto";
+import { User } from "@/dtos/User.dto";
 const TAG_BTN = "tagBtn";
 
-@Component({ components: { DragSelect, AnnotationCard } })
+@Component({ components: { DragSelect, AnnotationCard, AttributeCard } })
 export default class ParagraphViewer extends Vue {
   @Prop({ default: [] })
   paragraphs!: Word[][];
@@ -73,6 +87,7 @@ export default class ParagraphViewer extends Vue {
   showMenu = false;
   menuPosition = { x: 500, y: 500 };
   selectedAnnotation: Annotation | null = null;
+  selectedAttribute: Attribute | null = null;
 
   @Emit()
   @Watch("dragSelectBoundaries")
@@ -103,6 +118,14 @@ export default class ParagraphViewer extends Vue {
     return annotateModule.annotations;
   }
 
+  get entities(): Entity[] {
+    return entitiesModule.entities;
+  }
+
+  get attributes() {
+    return attributesModule.attributes;
+  }
+
   get words() {
     return this.paragraphs.flat();
   }
@@ -111,8 +134,18 @@ export default class ParagraphViewer extends Vue {
     return this.isDarkMode ? ["grey", "darken-4"] : ["grey", "lighten-4"];
   }
 
+  get attributeCreatedBy(): User {
+    return this.selectedAnnotation
+      ? this.selectedAnnotation.createdBy
+      : { username: "Stabylo" };
+  }
+
   isAPunctuation(word: Word) {
     return word.tag === "punctuation" || ["»", "«"].includes(word.value);
+  }
+
+  attributeEntity(word: Word) {
+    return this.entities.find(e => e.id === word.entityType);
   }
 
   wordAnnotation(word: Word): Annotation | undefined {
@@ -134,7 +167,9 @@ export default class ParagraphViewer extends Vue {
   }
 
   bgColor(word: Word) {
-    if (!this.isAnnotated(word) && !this.isDragSelected(word)) {
+    if (word?.uid) {
+      return `${this.attributeEntity(word)?.color}66`;
+    } else if (!this.isAnnotated(word) && !this.isDragSelected(word)) {
       return "transparent";
     }
 
@@ -214,12 +249,17 @@ export default class ParagraphViewer extends Vue {
   }
 
   handleClick(item: Word, event: any) {
-    if (this.isAnnotated(item)) {
+    if (this.isAnnotated(item) || item?.uid) {
       this.menuPosition = { x: event.clientX, y: event.clientY };
       this.dragSelectBoundaries = [];
-      const annotation = this.wordAnnotation(item);
-      if (annotation) {
+
+      if (this.isAnnotated(item)) {
+        const annotation = this.wordAnnotation(item)!;
         this.selectedAnnotation = annotation;
+        this.selectedAttribute = annotation.attribute;
+      } else {
+        this.selectedAnnotation = null;
+        this.selectedAttribute = this.attributes.find(a => a.id === item.uid)!;
       }
       return (this.showMenu = !this.showMenu);
     }

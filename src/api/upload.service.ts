@@ -19,7 +19,7 @@ export default class UploadService {
     });
   }
 
-  async chapterStatusSubscribe(chapterId: string) {
+  async chapterStatusSubscribe(chapterId: string, stopStatus = Status.Parsed) {
     const eventSource = new EventSource(
       `${BASE_URL}/projects/chapter/status/${chapterId}`
     );
@@ -27,7 +27,7 @@ export default class UploadService {
       const parsed = JSON.parse(data);
       const { id, status } = parsed;
       chaptersModule.updateChapterStatus({ chapterId: id, status });
-      if (status === Status.Parsed) {
+      if (status === stopStatus) {
         eventSource.close();
       }
     };

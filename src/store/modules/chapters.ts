@@ -1,13 +1,17 @@
 import {
-  VuexModule,
-  Module,
   Action,
+  Module,
   Mutation,
-  RegisterOptions
+  RegisterOptions,
+  VuexModule
 } from "vuex-class-modules";
 import store from "@/store/index";
 import { Chapter } from "@/dtos/Chapter.dto";
-import { CHAPTER_PARAGRAPHS, DELETE_CHAPTER } from "@/api/chapters.query";
+import {
+  ANALYZE_CHAPTER,
+  CHAPTER_PARAGRAPHS,
+  DELETE_CHAPTER
+} from "@/api/chapters.query";
 import apolloClient from "@/api/apollo.client";
 import {
   PaginationMeta,
@@ -19,10 +23,13 @@ import { Paragraph } from "@/dtos/Paragraph.dto";
 import { annotateModule, AnnotateModule } from "@/store/modules/annotate";
 import { PaginatedDto } from "@/dtos/Paginated.dto";
 import { Status } from "@/dtos/Project.dto";
+import UploadService from "@/api/upload.service";
 
 class ParagraphsInputDto extends PaginatedDto {
   readonly chapterId!: string;
 }
+
+const uploadService = new UploadService();
 
 @Module
 export class ChaptersModule extends VuexModule {
@@ -73,6 +80,18 @@ export class ChaptersModule extends VuexModule {
         ...this.chapters.filter(c => c.id !== updatedChapter.id),
         updatedChapter
       ];
+    }
+  }
+
+  @Action
+  async analyzeChapter(chapterId: string) {
+    const { data } = await apolloClient.query({
+      query: ANALYZE_CHAPTER,
+      variables: { chapterId }
+    });
+    if (data.analyzeChapter) {
+      this.updateChapterStatus({ chapterId, status: Status.Uploaded });
+      await uploadService.chapterStatusSubscribe(chapterId, Status.Analyzed);
     }
   }
 

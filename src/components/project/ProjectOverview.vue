@@ -117,14 +117,7 @@
             </v-list-item-avatar>
 
             <v-list-item-content class="px-4">
-              <v-badge
-                dot
-                overlap
-                bottom
-                :color="
-                  chapter.status === 'PARSED' ? 'success' : 'yellow accent-4'
-                "
-              >
+              <v-badge dot overlap bottom :color="statusColor(chapter.status)">
                 <v-list-item-title v-text="chapter.title" />
               </v-badge>
               <v-list-item-subtitle>date</v-list-item-subtitle>
@@ -173,8 +166,8 @@
   </v-container>
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from "vue-property-decorator";
-import { Project } from "@/dtos/Project.dto";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { Project, Status } from "@/dtos/Project.dto";
 import { projectsModule } from "@/store/modules/projects";
 import { chaptersModule } from "@/store/modules/chapters";
 
@@ -196,6 +189,11 @@ export default class ProjectOverview extends Vue {
       label: "global.annotate",
       handler: this.startAnnotation,
       icon: Icons.DocumentEdit
+    },
+    {
+      label: "global.analyze",
+      handler: this.analyzeChapter,
+      icon: Icons.Robot
     }
   ];
 
@@ -242,10 +240,21 @@ export default class ProjectOverview extends Vue {
     this.fileName = "unknown document";
   }
 
+  statusColor(status: Status) {
+    if (status === Status.Uploaded) {
+      return "red accent-4";
+    }
+    return status === Status.Analyzed ? "success" : "yellow accent-4";
+  }
+
   async deleteChapter(chapter: Chapter) {
     if (chapter.id) {
       return await chaptersModule.deleteChapter({ chapterId: chapter.id });
     }
+  }
+
+  async analyzeChapter(chapter: Chapter) {
+    await chaptersModule.analyzeChapter(chapter.id!);
   }
 
   async startAnnotation(chapter: Chapter) {

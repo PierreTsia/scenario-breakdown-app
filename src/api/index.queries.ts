@@ -6,7 +6,11 @@ import {
   DELETE_PROJECT,
   PROJECT_BY_ID
 } from "@/api/projects.query";
-import { DELETE_CHAPTER, CHAPTER_PARAGRAPHS } from "@/api/chapters.query";
+import {
+  DELETE_CHAPTER,
+  CHAPTER_PARAGRAPHS,
+  ANALYZE_CHAPTER
+} from "@/api/chapters.query";
 import {
   CREATE_ANNOTATION,
   PROJECT_ANNOTATIONS,
@@ -27,6 +31,7 @@ export {
   DELETE_PROJECT,
   PROJECT_BY_ID,
   DELETE_CHAPTER,
+  ANALYZE_CHAPTER,
   CHAPTER_PARAGRAPHS,
   CREATE_ENTITY,
   PROJECT_ENTITIES,

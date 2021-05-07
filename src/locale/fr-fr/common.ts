@@ -12,6 +12,7 @@ export default {
     upload: "Upload",
     loading: "En cours",
     annotate: "Annoter",
+    analyze: "Analyser",
     createNew: "Créer nouveau"
   },
   auth: {

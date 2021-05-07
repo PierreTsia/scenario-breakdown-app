@@ -12,6 +12,7 @@ export default {
     upload: "Upload",
     loading: "Loading",
     annotate: "Annotate",
+    analyze: "Analyze",
     createNew: "Create new"
   },
   auth: {

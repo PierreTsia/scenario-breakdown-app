@@ -15,6 +15,12 @@ export const DELETE_CHAPTER = gql`
   }
 `;
 
+export const ANALYZE_CHAPTER = gql`
+  query($chapterId: String!) {
+    analyzeChapter(chapterId: $chapterId)
+  }
+`;
+
 export const CHAPTER_PARAGRAPHS = gql`
   query($chapterParagraphsInput: ChapterParagraphsInput!) {
     chapterParagraphs(chapterParagraphsInput: $chapterParagraphsInput) {
@@ -25,6 +31,9 @@ export const CHAPTER_PARAGRAPHS = gql`
         tokens { 
           tag
           value
+          entityType
+          uid
+          originalSeq
         }
         fullText
       }

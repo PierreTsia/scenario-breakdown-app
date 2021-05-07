@@ -1,7 +1,7 @@
 import { Action, Module, Mutation, VuexModule } from "vuex-class-modules";
 import store from "@/store/index";
 import { Chapter } from "@/dtos/Chapter.dto";
-import { Paragraph } from "@/dtos/Paragraph.dto";
+import { Paragraph, Token } from "@/dtos/Paragraph.dto";
 import { plainToClass } from "class-transformer";
 import { Word } from "@/dtos/Word.dto";
 import { Annotation, DraftAnnotation } from "@/dtos/Annotation.dto";
@@ -11,8 +11,43 @@ import {
   DELETE_ANNOTATIONS,
   PROJECT_ANNOTATIONS
 } from "@/api/index.queries";
-import { CreateEntityInput } from "@/dtos/Entity.dto";
 import { CreateAnnotationInput } from "@/dtos/CreateAnnotationInput.dto";
+
+const toClass = (input: any): Word => plainToClass(Word, input);
+
+const serializeTokens = ({ tokens, id, index }: Paragraph) => {
+  const { words } = tokens.reduce(
+    (acc, token, tokenIndex) => {
+      if (!token?.originalSeq) {
+        acc.words.push(
+          toClass({
+            ...token,
+            paragraphId: id!,
+            wordIndex: acc.offset + tokenIndex,
+            paragraphIndex: index!
+          })
+        );
+      } else {
+        const words = token.originalSeq.map((word, sequenceWordIndex) => {
+          return toClass({
+            value: word,
+            paragraphId: id!,
+            wordIndex: acc.offset + tokenIndex + sequenceWordIndex,
+            paragraphIndex: index!,
+            tag: token?.tag,
+            uid: token?.uid,
+            entityType: token?.entityType
+          });
+        });
+        acc.words = [...acc.words, ...words];
+        acc.offset += words.length - 1;
+      }
+      return acc;
+    },
+    { offset: 0, words: [] as Word[] }
+  );
+  return words;
+};
 
 const mapWords = (
   acc: Map<number, Word[]>,
@@ -20,14 +55,8 @@ const mapWords = (
 ): Map<number, Word[]> => {
   return acc.set(
     p.index!,
-    p.tokens.map((t, i) =>
-      plainToClass(Word, {
-        ...t,
-        paragraphIndex: p.index,
-        paragraphId: p.id,
-        wordIndex: i
-      })
-    )
+    /* TODO 🛠 refact map function to get originalSeq if is tagged by NER*/
+    serializeTokens(p)
   );
 };
 
